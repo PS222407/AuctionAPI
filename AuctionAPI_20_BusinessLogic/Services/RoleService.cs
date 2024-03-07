@@ -17,13 +17,13 @@ public class RoleService : IRoleService
        return _roleRepository.GetAll();
     }
 
-    public async Task AttachRoleToUser(string roleName, string userId)
+    public async Task<IdentityUser?> AttachRoleToUser(string roleName, string userId)
     {
-        await _roleRepository.AttachRoleToUser(roleName, userId);
+        return await _roleRepository.AttachRoleToUser(roleName, userId);
     }
 
-    public async Task RevokeRoleFromUser(string roleName, string userId)
+    public async Task<IdentityUser?> RevokeRoleFromUser(string roleName, string userId)
     {
-        await _roleRepository.RevokeRoleFromUser(roleName, userId);
+        return await _roleRepository.RevokeRoleFromUser(roleName, userId);
     }
 }

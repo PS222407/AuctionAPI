@@ -6,7 +6,7 @@ public interface IRoleService
 {
     public IEnumerable<IdentityRole> GetAll();
 
-    public Task AttachRoleToUser(string roleName, string userId);
+    public Task<IdentityUser?> AttachRoleToUser(string roleName, string userId);
 
-    public Task RevokeRoleFromUser(string roleName, string userId);
+    public Task<IdentityUser?> RevokeRoleFromUser(string roleName, string userId);
 }
