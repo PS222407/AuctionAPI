@@ -1,7 +1,8 @@
 ﻿using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.ViewModels;
-using AuctionAPI_20_BusinessLogic;
 using AuctionAPI_20_BusinessLogic.Interfaces;
+using AuctionAPI_20_BusinessLogic.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;
@@ -10,17 +11,18 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
-    private readonly IProductService _ProductService;
+    private readonly IProductService _productService;
 
     public ProductController(IProductService productService)
     {
-        _ProductService = productService;
+        _productService = productService;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public IEnumerable<ProductViewModel> Get()
     {
-        return _ProductService.GetAll().Select(x => new ProductViewModel
+        return _productService.GetAll().Select(x => new ProductViewModel
         {
             Id = x.Id,
             Name = x.Name
@@ -30,7 +32,7 @@ public class ProductController : ControllerBase
     [HttpGet("{id:int}")]
     public ProductViewModel? Get(int id)
     {
-        Product? product = _ProductService.GetById(id);
+        Product? product = _productService.GetById(id);
         if (product == null)
         {
             return null;
@@ -53,7 +55,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name
         };
 
-        _ProductService.Create(product);
+        _productService.Create(product);
     }
 
     [HttpPut("{id:int}")]
@@ -65,12 +67,12 @@ public class ProductController : ControllerBase
             Name = productRequest.Name
         };
 
-        _ProductService.Update(product);
+        _productService.Update(product);
     }
 
     [HttpDelete("{id:int}")]
     public void Delete(int id)
     {
-        _ProductService.Delete(id);
+        _productService.Delete(id);
     }
 }
