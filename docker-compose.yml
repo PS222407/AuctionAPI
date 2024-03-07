@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  pma:
+    image: jensr22/phpmyadmin:latest
+    container_name: ${APP_NAME}-pma
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=user
+      - PMA_PASSWORD=password
+    networks:
+      - auctionapi_network
+
+  mysql:
+    image: jensr22/mysql:latest
+    container_name: ${APP_NAME}-mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=auctionapi
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - auctionapi_network
+
+networks:
+  auctionapi_network:
+    external: true
+
+volumes:
+  mysql_data:
+    driver: local

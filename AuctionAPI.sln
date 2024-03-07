@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionAPI_10_Api", "AuctionAPI_10_Api\AuctionAPI_10_Api.csproj", "{8916A452-AD66-4F28-8719-907821EDA03C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionAPI_20_BusinessLogic", "AuctionAPI_20_BusinessLogic\AuctionAPI_20_BusinessLogic.csproj", "{DFB76930-6A66-4537-824B-DBB22917E76C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionAPI_30_DataAccess", "AuctionAPI_30_DataAccess\AuctionAPI_30_DataAccess.csproj", "{55750A68-DFB8-490E-8C77-D20BF20721FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8916A452-AD66-4F28-8719-907821EDA03C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8916A452-AD66-4F28-8719-907821EDA03C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8916A452-AD66-4F28-8719-907821EDA03C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8916A452-AD66-4F28-8719-907821EDA03C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFB76930-6A66-4537-824B-DBB22917E76C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFB76930-6A66-4537-824B-DBB22917E76C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFB76930-6A66-4537-824B-DBB22917E76C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFB76930-6A66-4537-824B-DBB22917E76C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55750A68-DFB8-490E-8C77-D20BF20721FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55750A68-DFB8-490E-8C77-D20BF20721FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55750A68-DFB8-490E-8C77-D20BF20721FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55750A68-DFB8-490E-8C77-D20BF20721FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
