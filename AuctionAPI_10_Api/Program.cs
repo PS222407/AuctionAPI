@@ -87,4 +87,11 @@ using (IServiceScope scope = app.Services.CreateScope())
     }
 }
 
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    IServiceProvider services = scope.ServiceProvider;
+
+    SeedData.Initialize(services);
+}
+
 app.Run();

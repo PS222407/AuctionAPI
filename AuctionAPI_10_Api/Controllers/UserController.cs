@@ -1,5 +1,7 @@
-﻿using AuctionAPI_10_Api.ViewModels;
+﻿using System.Security.Claims;
+using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;
@@ -22,5 +24,18 @@ public class UserController : Controller
             Name = x.UserName,
             Email = x.Email
         });
+    }
+
+    [HttpGet("info")]
+    [Authorize]
+    public List<string>? GetInfo()
+    {
+        string? id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (id == null)
+        {
+            return null;
+        }
+
+        return User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(r => r.Value).ToList();
     }
 }

@@ -18,7 +18,8 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
+    [Authorize]
     [HttpGet]
     public IEnumerable<ProductViewModel> Get()
     {
