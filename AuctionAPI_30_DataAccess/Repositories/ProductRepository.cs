@@ -26,7 +26,7 @@ public class ProductRepository : IProductRepository
 
     public Product? GetById(int id)
     {
-        return _dbContext.Products.Find(id);
+        return _dbContext.Products.FirstOrDefault(p => p.Id == id);
     }
 
     public bool Update(Product product)
@@ -37,7 +37,7 @@ public class ProductRepository : IProductRepository
 
     public bool Delete(int id)
     {
-        Product? product = _dbContext.Products.Find(id);
+        Product? product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
         if (product == null)
         {
             return false;
