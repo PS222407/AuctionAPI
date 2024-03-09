@@ -57,7 +57,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 // }
 
-app.MapIdentityApi<IdentityUser>();
+app.MapGroup("/api").MapIdentityApi<IdentityUser>();
 
 app.UseHttpsRedirection();
 
