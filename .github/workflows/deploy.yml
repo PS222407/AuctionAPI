@@ -29,7 +29,7 @@ jobs:
     
 # DEPLOY
     - name: Build the Docker image
-      working-directory: AuctionAPI
+      working-directory: AuctionAPI_10_Api
       run: docker build -t jensr22/auction-api:latest -f Dockerfile .. 
 
     - name: Log into Docker Hub
