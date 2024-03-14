@@ -1,3 +1,4 @@
+using AuctionAPI_10_Api.Services;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Services;
 using AuctionAPI_30_DataAccess.Data;
@@ -11,8 +12,11 @@ using Swashbuckle.AspNetCore.Filters;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -48,7 +52,24 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.WithOrigins(builder.Configuration.GetValue<string>("FrontendUrl"))
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 WebApplication app = builder.Build();
+
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    ServeUnknownFileTypes = true,
+});
 
 // // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
@@ -64,6 +85,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors();
 
 using (IServiceScope scope = app.Services.CreateScope())
 {

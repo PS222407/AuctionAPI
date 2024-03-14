@@ -1,4 +1,5 @@
 ﻿using AuctionAPI_10_Api.RequestModels;
+using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
@@ -7,26 +8,40 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;
 
+[Authorize(Roles = "Admin")]
+[Authorize]
 [Route("api/v1/[controller]")]
 [ApiController]
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
 
-    public ProductController(IProductService productService)
+    private readonly FileService _fileService;
+
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    
+    private readonly IConfiguration _configuration;
+
+    public ProductController(
+        FileService fileService,
+        IProductService productService,
+        IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
     {
         _productService = productService;
+        _fileService = fileService;
+        _webHostEnvironment = webHostEnvironment;
+        _configuration = configuration;
     }
 
-    //[Authorize(Roles = "Admin")]
-    [Authorize]
     [HttpGet]
     public IEnumerable<ProductViewModel> Get()
     {
         return _productService.GetAll().Select(x => new ProductViewModel
         {
             Id = x.Id,
-            Name = x.Name
+            Name = x.Name,
+            Description = x.Description,
+            ImageUrl = $"{_configuration["BackendUrl"]}{x.ImageUrl}"
         });
     }
 
@@ -42,20 +57,25 @@ public class ProductController : ControllerBase
         ProductViewModel productViewModel = new()
         {
             Id = product.Id,
-            Name = product.Name
+            Name = product.Name,
+            Description = product.Description,
+            ImageUrl = product.ImageUrl,
         };
 
         return productViewModel;
     }
 
     [HttpPost]
-    public void Post([FromBody] ProductRequest productRequest)
+    [Consumes("multipart/form-data")]
+    public async Task Post([FromForm] ProductRequest productRequest)
     {
         Product product = new()
         {
-            Name = productRequest.Name
+            Name = productRequest.Name,
+            Description = productRequest.Description,
+            ImageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "",
         };
-
+        
         _productService.Create(product);
     }
 
