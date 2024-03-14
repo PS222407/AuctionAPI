@@ -9,7 +9,13 @@ public class FileService
             string directory = "uploads/images";
             string fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
             string webRootPath = webHostEnvironment.WebRootPath;
+            string imageDirectoryPath = Path.Combine(webRootPath, directory);
             string imagePath = Path.Combine(webRootPath, directory, fileName);
+
+            if (!Directory.Exists(imageDirectoryPath))
+            {
+                Directory.CreateDirectory(imageDirectoryPath);
+            }
 
             await using FileStream fileStream = new(imagePath, FileMode.Create);
             await image.CopyToAsync(fileStream);

@@ -1,3 +1,4 @@
+using AuctionAPI_10_Api.Services;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Services;
 using AuctionAPI_30_DataAccess.Data;
@@ -11,6 +12,7 @@ using Swashbuckle.AspNetCore.Filters;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
@@ -60,6 +62,12 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
+
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    ServeUnknownFileTypes = true,
+});
 
 // // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
