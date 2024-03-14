@@ -1,4 +1,5 @@
 ﻿using AuctionAPI_10_Api.RequestModels;
+using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
@@ -13,9 +14,19 @@ public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
 
-    public ProductController(IProductService productService)
+    private readonly FileService _fileService;
+
+    private readonly IWebHostEnvironment _webHostEnvironment;
+
+    public ProductController(
+        FileService fileService,
+        IProductService productService,
+        IWebHostEnvironment webHostEnvironment
+    )
     {
         _productService = productService;
+        _fileService = fileService;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     //[Authorize(Roles = "Admin")]
@@ -49,11 +60,13 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public void Post([FromBody] ProductRequest productRequest)
+    public async Task Post([FromBody] ProductRequest productRequest)
     {
         Product product = new()
         {
-            Name = productRequest.Name
+            Name = productRequest.Name,
+            Description = productRequest.Description,
+            ImageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "",
         };
 
         _productService.Create(product);
