@@ -12,9 +12,9 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public List<Category> GetAll()
+    public List<Category> Get()
     {
-        return _categoryRepository.GetAll();
+        return _categoryRepository.Get();
     }
     
     public bool Create(Category category)

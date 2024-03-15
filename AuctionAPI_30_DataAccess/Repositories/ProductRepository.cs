@@ -14,7 +14,7 @@ public class ProductRepository : IProductRepository
         _dbContext = dbContext;
     }
 
-    public List<Product> GetAll()
+    public List<Product> Get()
     {
         return _dbContext.Products.ToList();
     }

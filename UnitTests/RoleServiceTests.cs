@@ -26,11 +26,11 @@ public class RoleServiceTests
             new IdentityRole { Name = "Role 1" },
             new IdentityRole { Name = "Role 2" }
         ];
-        _roleRepositoryMock.Setup(x => x.GetAll())
+        _roleRepositoryMock.Setup(x => x.Get())
             .Returns(roles);
         
         // Act
-        IEnumerable<IdentityRole> result = _roleService.GetAll();
+        IEnumerable<IdentityRole> result = _roleService.Get();
         
         // Assert
         Assert.That(result, Is.EqualTo(roles));

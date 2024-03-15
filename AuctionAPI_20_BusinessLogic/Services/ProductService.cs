@@ -12,9 +12,9 @@ public class ProductService : IProductService
         _productRepository = productRepository;
     }
 
-    public List<Product> GetAll()
+    public List<Product> Get()
     {
-        return _productRepository.GetAll();
+        return _productRepository.Get();
     }
     
     public bool Create(Product product)

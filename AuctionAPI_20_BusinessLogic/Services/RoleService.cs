@@ -12,9 +12,9 @@ public class RoleService : IRoleService
         _roleRepository = roleRepository;
     }
 
-    public IEnumerable<IdentityRole> GetAll()
+    public IEnumerable<IdentityRole> Get()
     {
-       return _roleRepository.GetAll();
+       return _roleRepository.Get();
     }
 
     public async Task<IdentityUser?> AttachRoleToUser(string roleName, string userId)
