@@ -15,7 +15,7 @@ public class RoleRepository : IRoleRepository
         _roleManager = roleManager;
     }
 
-    public IEnumerable<IdentityRole> GetAll()
+    public IEnumerable<IdentityRole> Get()
     {
         return _roleManager.Roles;
     }

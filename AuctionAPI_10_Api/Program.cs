@@ -17,6 +17,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
+builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -44,6 +46,7 @@ builder.Services.AddDbContext<DataContext>(options =>
         mySqlOptions => mySqlOptions.MigrationsAssembly("AuctionAPI_30_DataAccess")
     ));
 
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddRoles<IdentityRole>()
@@ -65,6 +68,8 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
+app.UseCors();
+
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -82,11 +87,10 @@ app.MapGroup("/api").MapIdentityApi<IdentityUser>();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors();
 
 using (IServiceScope scope = app.Services.CreateScope())
 {

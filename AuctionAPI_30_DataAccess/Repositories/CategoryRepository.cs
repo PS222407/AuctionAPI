@@ -1,6 +1,7 @@
 ﻿using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
 using AuctionAPI_30_DataAccess.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuctionAPI_30_DataAccess.Repositories;
 
@@ -13,7 +14,7 @@ public class CategoryRepository : ICategoryRepository
         _dbContext = dbContext;
     }
 
-    public List<Category> GetAll()
+    public List<Category> Get()
     {
         return _dbContext.Categories.ToList();
     }
@@ -24,9 +25,11 @@ public class CategoryRepository : ICategoryRepository
         return _dbContext.SaveChanges() > 0;
     }
 
-    public Category? GetById(int id)
+    public Category? GetById(long id)
     {
-        return _dbContext.Categories.FirstOrDefault(p => p.Id == id);
+        return _dbContext.Categories
+            .Include(c => c.Products)
+            .FirstOrDefault(c => c.Id == id);
     }
 
     public bool Update(Category category)
@@ -35,9 +38,9 @@ public class CategoryRepository : ICategoryRepository
         return _dbContext.SaveChanges() > 0;
     }
 
-    public bool Delete(int id)
+    public bool Delete(long id)
     {
-        Category? category = _dbContext.Categories.FirstOrDefault(p => p.Id == id);
+        Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
         if (category == null)
         {
             return false;

@@ -4,7 +4,7 @@ namespace AuctionAPI_20_BusinessLogic.Interfaces;
 
 public interface IRoleRepository
 {
-    public IEnumerable<IdentityRole> GetAll();
+    public IEnumerable<IdentityRole> Get();
 
     public Task<IdentityUser?> AttachRoleToUser(string roleName, string userId);
 

@@ -8,7 +8,7 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class RoleController : Controller
+public class RoleController : ControllerBase
 {
     private readonly SignInManager<IdentityUser> _signInManager;
 
@@ -23,7 +23,7 @@ public class RoleController : Controller
     [HttpGet]
     public IEnumerable<RoleViewModel> Get()
     {
-        return _roleService.GetAll().Select(x => new RoleViewModel
+        return _roleService.Get().Select(x => new RoleViewModel
         {
             Name = x.Name
         });
