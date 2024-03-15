@@ -26,11 +26,11 @@ public class ProductServiceTests
             new Product { Id = 1, Name = "Product 1" },
             new Product { Id = 2, Name = "Product 2" }
         ];
-        _productRepositoryMock.Setup(x => x.GetAll())
+        _productRepositoryMock.Setup(x => x.Get())
             .Returns(products);
 
         // Act
-        List<Product> result = _productService.GetAll();
+        List<Product> result = _productService.Get();
 
         // Assert
         Assert.That(result, Is.EqualTo(products));

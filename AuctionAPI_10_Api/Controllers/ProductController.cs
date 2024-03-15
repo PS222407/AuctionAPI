@@ -43,7 +43,7 @@ public class ProductController : ControllerBase
     [HttpGet]
     public IEnumerable<ProductViewModel> Get()
     {
-        return _productService.GetAll().Select(x => new ProductViewModel
+        return _productService.Get().Select(x => new ProductViewModel
         {
             Id = x.Id,
             Name = x.Name,

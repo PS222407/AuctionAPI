@@ -4,7 +4,7 @@ namespace AuctionAPI_20_BusinessLogic.Interfaces;
 
 public interface IProductRepository
 {
-    public List<Product> GetAll();
+    public List<Product> Get();
     
     public bool Create(Product product);
     

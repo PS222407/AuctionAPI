@@ -23,7 +23,7 @@ public class RoleController : ControllerBase
     [HttpGet]
     public IEnumerable<RoleViewModel> Get()
     {
-        return _roleService.GetAll().Select(x => new RoleViewModel
+        return _roleService.Get().Select(x => new RoleViewModel
         {
             Name = x.Name
         });
