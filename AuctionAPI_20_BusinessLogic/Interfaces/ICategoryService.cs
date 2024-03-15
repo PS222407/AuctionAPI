@@ -8,9 +8,9 @@ public interface ICategoryService
     
     public bool Create(Category product);
     
-    public Category? GetById(int id);
+    public Category? GetById(long id);
     
     public bool Update(Category product);
     
-    public bool Delete(int id);
+    public bool Delete(long id);
 }

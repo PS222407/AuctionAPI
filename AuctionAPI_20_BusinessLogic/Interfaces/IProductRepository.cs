@@ -8,9 +8,9 @@ public interface IProductRepository
     
     public bool Create(Product product);
     
-    public Product? GetById(int id);
+    public Product? GetById(long id);
     
     public bool Update(Product product);
     
-    public bool Delete(int id);
+    public bool Delete(long id);
 }

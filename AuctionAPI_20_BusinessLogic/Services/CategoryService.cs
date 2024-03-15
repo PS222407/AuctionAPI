@@ -22,7 +22,7 @@ public class CategoryService : ICategoryService
         return _categoryRepository.Create(category);
     }
 
-    public Category? GetById(int id)
+    public Category? GetById(long id)
     {
         return _categoryRepository.GetById(id);
     }
@@ -32,7 +32,7 @@ public class CategoryService : ICategoryService
         return _categoryRepository.Update(category);
     }
     
-    public bool Delete(int id)
+    public bool Delete(long id)
     {
         return _categoryRepository.Delete(id);
     }

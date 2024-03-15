@@ -8,9 +8,9 @@ public interface ICategoryRepository
     
     public bool Create(Category product);
     
-    public Category? GetById(int id);
+    public Category? GetById(long id);
     
     public bool Update(Category category);
     
-    public bool Delete(int id);
+    public bool Delete(long id);
 }

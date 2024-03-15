@@ -1,6 +1,7 @@
 ﻿using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
 using AuctionAPI_30_DataAccess.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuctionAPI_30_DataAccess.Repositories;
 
@@ -24,9 +25,11 @@ public class ProductRepository : IProductRepository
         return _dbContext.SaveChanges() > 0;
     }
 
-    public Product? GetById(int id)
+    public Product? GetById(long id)
     {
-        return _dbContext.Products.FirstOrDefault(p => p.Id == id);
+        return _dbContext.Products
+            .Include(p => p.Category)
+            .FirstOrDefault(p => p.Id == id);
     }
 
     public bool Update(Product product)
@@ -35,7 +38,7 @@ public class ProductRepository : IProductRepository
         return _dbContext.SaveChanges() > 0;
     }
 
-    public bool Delete(int id)
+    public bool Delete(long id)
     {
         Product? product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
         if (product == null)
