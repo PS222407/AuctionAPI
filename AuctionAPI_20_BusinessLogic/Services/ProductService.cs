@@ -19,10 +19,12 @@ public class ProductService : IProductService
     
     public bool Create(Product product)
     {
+
+        
         return _productRepository.Create(product);
     }
 
-    public Product? GetById(int id)
+    public Product? GetById(long id)
     {
         return _productRepository.GetById(id);
     }
@@ -32,7 +34,7 @@ public class ProductService : IProductService
         return _productRepository.Update(product);
     }
     
-    public bool Delete(int id)
+    public bool Delete(long id)
     {
         return _productRepository.Delete(id);
     }

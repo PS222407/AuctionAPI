@@ -7,4 +7,6 @@ public class ProductRequest
     public string Description { get; set; }
 
     public IFormFile Image { get; set; }
+    
+    public long CategoryId { get; set; }
 }

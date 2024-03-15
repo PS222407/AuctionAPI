@@ -5,6 +5,7 @@ using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.ProjectModel;
 
 namespace AuctionAPI_10_Api.Controllers;
 
@@ -16,21 +17,27 @@ public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
 
+    private readonly ICategoryService _categoryService;
+
     private readonly FileService _fileService;
 
     private readonly IWebHostEnvironment _webHostEnvironment;
-    
+
     private readonly IConfiguration _configuration;
 
     public ProductController(
         FileService fileService,
         IProductService productService,
-        IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        IWebHostEnvironment webHostEnvironment,
+        IConfiguration configuration,
+        ICategoryService categoryService
+    )
     {
         _productService = productService;
         _fileService = fileService;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
+        _categoryService = categoryService;
     }
 
     [HttpGet]
@@ -46,7 +53,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public ProductViewModel? Get(int id)
+    public ProductViewModel? Get(long id)
     {
         Product? product = _productService.GetById(id);
         if (product == null)
@@ -60,6 +67,7 @@ public class ProductController : ControllerBase
             Name = product.Name,
             Description = product.Description,
             ImageUrl = product.ImageUrl,
+            CategoryId = product.Category?.Id
         };
 
         return productViewModel;
@@ -67,28 +75,69 @@ public class ProductController : ControllerBase
 
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task Post([FromForm] ProductRequest productRequest)
+    public async Task<IActionResult> Post([FromForm] ProductRequest productRequest)
     {
+        Category? category = _categoryService.GetById(productRequest.CategoryId);
+        if (category == null)
+        {
+            return NotFound(new { Message = "Category not found" });
+        }
+
+        string imageUrl;
+        try
+        {
+            imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
+        }
+        catch (FileFormatException e)
+        {
+            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } }});
+        }
+
         Product product = new()
         {
             Name = productRequest.Name,
             Description = productRequest.Description,
-            ImageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "",
+            ImageUrl = imageUrl,
+            Category = category
         };
-        
+
         _productService.Create(product);
+
+        return Ok();
     }
 
     [HttpPut("{id:int}")]
-    public void Put(int id, [FromBody] ProductRequest productRequest)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Put(int id, [FromForm] ProductRequest productRequest)
     {
+        Category? category = _categoryService.GetById(productRequest.CategoryId);
+        if (category == null)
+        {
+            return NotFound(new { Message = "Category not found" });
+        }
+        
+        string imageUrl;
+        try
+        {
+            imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
+        }
+        catch (FileFormatException)
+        {
+            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } }});
+        }
+
         Product product = new()
         {
             Id = id,
-            Name = productRequest.Name
+            Name = productRequest.Name,
+            Description = productRequest.Description,
+            ImageUrl = imageUrl,
+            Category = category
         };
 
         _productService.Update(product);
+
+        return Ok();
     }
 
     [HttpDelete("{id:int}")]

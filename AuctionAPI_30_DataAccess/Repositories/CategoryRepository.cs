@@ -24,7 +24,7 @@ public class CategoryRepository : ICategoryRepository
         return _dbContext.SaveChanges() > 0;
     }
 
-    public Category? GetById(int id)
+    public Category? GetById(long id)
     {
         return _dbContext.Categories.FirstOrDefault(p => p.Id == id);
     }
@@ -35,7 +35,7 @@ public class CategoryRepository : ICategoryRepository
         return _dbContext.SaveChanges() > 0;
     }
 
-    public bool Delete(int id)
+    public bool Delete(long id)
     {
         Category? category = _dbContext.Categories.FirstOrDefault(p => p.Id == id);
         if (category == null)
