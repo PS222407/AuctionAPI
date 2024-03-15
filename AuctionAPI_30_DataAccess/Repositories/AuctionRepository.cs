@@ -29,7 +29,9 @@ public class AuctionRepository : IAuctionRepository
 
     public Auction? GetById(long id)
     {
-        return _dbContext.Auctions.FirstOrDefault(a => a.Id == id);
+        return _dbContext.Auctions
+            .Include(a => a.Product)
+            .FirstOrDefault(a => a.Id == id);
     }
 
     public bool Update(Auction auction)
