@@ -7,29 +7,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;
 
-[Authorize(Roles = "Admin")]
-[Authorize]
 [Route("api/v1/[controller]")]
 [ApiController]
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
     
-    public CategoryController(ICategoryService categoryService)
+    private readonly IConfiguration _configuration;
+    
+    public CategoryController(ICategoryService categoryService, IConfiguration configuration)
     {
         _categoryService = categoryService;
+        _configuration = configuration;
     }
     
     [HttpGet]
     public IEnumerable<CategoryViewModel> Get()
     {
-        return _categoryService.GetAll().Select(x => new CategoryViewModel
+        return _categoryService.Get().Select(c => new CategoryViewModel
         {
-            Id = x.Id,
-            Name = x.Name
+            Id = c.Id,
+            Name = c.Name,
+            Icon = c.Icon
         });
     }
-
+    
     [HttpGet("{id}")]
     public CategoryViewModel? Get(int id)
     {
@@ -42,35 +44,48 @@ public class CategoryController : ControllerBase
         CategoryViewModel categoryViewModel = new()
         {
             Id = category.Id,
-            Name = category.Name
+            Name = category.Name,
+            Icon = category.Icon,
+            Products = category.Products.Select(p => new ProductViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                ImageUrl = $"{_configuration["BackendUrl"]}{p.ImageUrl}"
+            }).ToList()
         };
         
         return categoryViewModel;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public void Post([FromBody] CategoryRequest categoryRequest)
     {
         Category category = new()
         {
-            Name = categoryRequest.Name
+            Name = categoryRequest.Name,
+            Icon = categoryRequest.Icon,
         };
         
         _categoryService.Create(category);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public void Put(int id, [FromBody] CategoryRequest categoryRequest)
     {
         Category category = new()
         {
             Id = id,
-            Name = categoryRequest.Name
+            Name = categoryRequest.Name,
+            Icon = categoryRequest.Icon
         };
         
         _categoryService.Update(category);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public void Delete(int id)
     {

@@ -8,7 +8,7 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class RoleController : Controller
+public class RoleController : ControllerBase
 {
     private readonly SignInManager<IdentityUser> _signInManager;
 

@@ -4,7 +4,7 @@ namespace AuctionAPI_20_BusinessLogic.Interfaces;
 
 public interface ICategoryRepository
 {
-    public List<Category> GetAll();
+    public List<Category> Get();
     
     public bool Create(Category product);
     
