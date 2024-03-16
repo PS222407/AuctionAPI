@@ -13,4 +13,6 @@ public interface ICategoryService
     public bool Update(Category product);
     
     public bool Delete(long id);
+    
+    public bool Exists(long id);
 }

@@ -77,8 +77,7 @@ public class ProductController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Post([FromForm] ProductRequest productRequest)
     {
-        Category? category = _categoryService.GetById(productRequest.CategoryId);
-        if (category == null)
+        if (!_categoryService.Exists(productRequest.CategoryId))
         {
             return NotFound(new { Message = "Category not found" });
         }
@@ -98,7 +97,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            Category = category
+            CategoryId = productRequest.CategoryId
         };
 
         _productService.Create(product);
@@ -110,8 +109,7 @@ public class ProductController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Put(int id, [FromForm] ProductRequest productRequest)
     {
-        Category? category = _categoryService.GetById(productRequest.CategoryId);
-        if (category == null)
+        if (!_categoryService.Exists(productRequest.CategoryId))
         {
             return NotFound(new { Message = "Category not found" });
         }
@@ -132,7 +130,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            Category = category
+            CategoryId = productRequest.CategoryId
         };
 
         _productService.Update(product);

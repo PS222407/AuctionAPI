@@ -36,4 +36,9 @@ public class CategoryService : ICategoryService
     {
         return _categoryRepository.Delete(id);
     }
+
+    public bool Exists(long id)
+    {
+        return _categoryRepository.Exists(id);
+    }
 }
