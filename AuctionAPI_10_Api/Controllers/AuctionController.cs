@@ -84,15 +84,14 @@ public class AuctionController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromBody] AuctionRequest auctionRequest)
     {
-        Product? product = _productService.GetById(auctionRequest.ProductId);
-        if (product == null)
+        if (!_productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
         }
         
         Auction auction = new()
         {
-            Product = product,
+            ProductId = auctionRequest.ProductId,
             DurationInSeconds = auctionRequest.DurationInSeconds,
             StartDateTime = auctionRequest.StartDateTime,
         };
@@ -106,8 +105,7 @@ public class AuctionController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult Put(int id, [FromBody] AuctionRequest auctionRequest)
     {
-        Product? product = _productService.GetById(auctionRequest.ProductId);
-        if (product == null)
+        if (!_productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
         }
@@ -115,7 +113,7 @@ public class AuctionController : ControllerBase
         Auction auction = new()
         {
             Id = id,
-            Product = product,
+            ProductId = auctionRequest.ProductId,
             DurationInSeconds = auctionRequest.DurationInSeconds,
             StartDateTime = auctionRequest.StartDateTime,
         };

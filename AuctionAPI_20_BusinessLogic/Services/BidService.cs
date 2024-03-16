@@ -24,8 +24,8 @@ public class BidService : IBidService
         }
 
         Auction auction = _auctionService.GetById(bid.AuctionId)!;
-        Bid highestBid = auction.Bids.OrderByDescending(b => b.PriceInCents).First();
-        if (highestBid.PriceInCents >= bid.PriceInCents)
+        Bid? highestBid = auction.Bids.MaxBy(b => b.PriceInCents);
+        if (highestBid != null && highestBid.PriceInCents >= bid.PriceInCents)
         {
             throw new BidTooLowException("Bid is too low");
         }

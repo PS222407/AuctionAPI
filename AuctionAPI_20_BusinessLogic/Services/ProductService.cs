@@ -38,4 +38,9 @@ public class ProductService : IProductService
     {
         return _productRepository.Delete(id);
     }
+
+    public bool Exists(long id)
+    {
+        return _productRepository.Exists(id);
+    }
 }
