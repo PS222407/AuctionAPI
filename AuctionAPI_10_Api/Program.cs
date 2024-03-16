@@ -70,10 +70,10 @@ WebApplication app = builder.Build();
 
 app.UseCors();
 
-app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     ServeUnknownFileTypes = true,
+    RequestPath = "/api"
 });
 
 // // Configure the HTTP request pipeline.
