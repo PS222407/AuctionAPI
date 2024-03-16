@@ -13,4 +13,6 @@ public interface IProductService
     public bool Update(Product product);
     
     public bool Delete(long id);
+    
+    public bool Exists(long id);
 }
