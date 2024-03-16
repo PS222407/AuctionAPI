@@ -108,7 +108,7 @@ using (IServiceScope scope = app.Services.CreateScope())
                 await roleManager.CreateAsync(new IdentityRole(role));
             }
         }
-        catch (MySqlException e)
+        catch (MySqlException)
         {
         }
     }
