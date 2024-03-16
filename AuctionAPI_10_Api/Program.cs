@@ -1,3 +1,4 @@
+using AuctionAPI_10_Api.Hub;
 using AuctionAPI_10_Api.Services;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Services;
@@ -25,6 +26,8 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -93,6 +96,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<MainHub>("/api/mainHub");
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
