@@ -50,4 +50,9 @@ public class ProductRepository : IProductRepository
         _dbContext.Products.Remove(product);
         return _dbContext.SaveChanges() > 0;
     }
+
+    public bool Exists(long id)
+    {
+        return _dbContext.Products.Any(p => p.Id == id);
+    }
 }
