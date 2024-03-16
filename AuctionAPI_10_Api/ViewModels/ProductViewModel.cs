@@ -10,5 +10,7 @@ public class ProductViewModel
     
     public string ImageUrl { get; set; }
     
-    public long? CategoryId { get; set; }
+    public CategoryViewModel? Category { get; set; }
+    
+    public List<AuctionViewModel> Auctions { get; set; }
 }

@@ -13,4 +13,6 @@ public class Product
     public long CategoryId { get; set; }
     
     public Category? Category { get; set; }
+    
+    public List<Auction> Auctions { get; set; }
 }

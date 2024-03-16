@@ -29,6 +29,7 @@ public class ProductRepository : IProductRepository
     {
         return _dbContext.Products
             .Include(p => p.Category)
+            .Include(p => p.Auctions)
             .FirstOrDefault(p => p.Id == id);
     }
 

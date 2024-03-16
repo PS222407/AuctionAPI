@@ -9,4 +9,6 @@ public class Auction
     public DateTime StartDateTime { get; set; }
 
     public int DurationInSeconds { get; set; }
+    
+    public List<Bid> Bids { get; set; }
 }

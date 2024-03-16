@@ -13,4 +13,6 @@ public interface IAuctionService
     public bool Update(Auction auction);
     
     public bool Delete(long id);
+    
+    public bool IsRunning(long id);
 }
