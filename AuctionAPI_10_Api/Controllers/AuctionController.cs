@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;
 
-[Authorize(Roles = "Admin")]
 [Route("api/v1/[controller]")]
 [ApiController]
 public class AuctionController : ControllerBase
@@ -64,11 +63,24 @@ public class AuctionController : ControllerBase
             },
             DurationInSeconds = auction.DurationInSeconds,
             StartDateTime = auction.StartDateTime,
+            Bids = auction.Bids.Select(b => new BidViewModel
+            {
+                Id = b.Id,
+                PriceInCents = b.PriceInCents,
+                User = new UserViewModel
+                {
+                    Id = b.User.Id,
+                    Name = b.User.UserName,
+                    Email = b.User.Email,
+                },
+                CreatedAt = b.CreatedAt
+            }).ToList()
         };
         
         return auctionViewModel;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult Post([FromBody] AuctionRequest auctionRequest)
     {
@@ -90,6 +102,7 @@ public class AuctionController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public IActionResult Put(int id, [FromBody] AuctionRequest auctionRequest)
     {
@@ -112,6 +125,7 @@ public class AuctionController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public void Delete(int id)
     {
