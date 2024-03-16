@@ -49,4 +49,9 @@ public class CategoryRepository : ICategoryRepository
         _dbContext.Categories.Remove(category);
         return _dbContext.SaveChanges() > 0;
     }
+
+    public bool Exists(long id)
+    {
+        return _dbContext.Categories.Any(c => c.Id == id);
+    }
 }

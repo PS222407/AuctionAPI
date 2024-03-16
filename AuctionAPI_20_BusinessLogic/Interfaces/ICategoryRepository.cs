@@ -13,4 +13,6 @@ public interface ICategoryRepository
     public bool Update(Category category);
     
     public bool Delete(long id);
+    
+    public bool Exists(long id);
 }

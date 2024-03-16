@@ -16,4 +16,6 @@ public class DataContext : IdentityDbContext<IdentityUser, IdentityRole, string>
     public DbSet<Category> Categories { get; set; }
     
     public DbSet<Auction> Auctions { get; set; }
+    
+    public DbSet<Bid> Bids { get; set; }
 }

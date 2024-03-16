@@ -10,5 +10,9 @@ public class Product
     
     public string ImageUrl { get; set; }
 
+    public long CategoryId { get; set; }
+    
     public Category? Category { get; set; }
+    
+    public List<Auction> Auctions { get; set; }
 }

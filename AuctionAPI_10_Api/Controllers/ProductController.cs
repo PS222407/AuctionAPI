@@ -9,8 +9,6 @@ using NuGet.ProjectModel;
 
 namespace AuctionAPI_10_Api.Controllers;
 
-[Authorize(Roles = "Admin")]
-[Authorize]
 [Route("api/v1/[controller]")]
 [ApiController]
 public class ProductController : ControllerBase
@@ -66,19 +64,29 @@ public class ProductController : ControllerBase
             Id = product.Id,
             Name = product.Name,
             Description = product.Description,
-            ImageUrl = product.ImageUrl,
-            CategoryId = product.Category?.Id
+            ImageUrl = $"{_configuration["BackendUrl"]}{product.ImageUrl}",
+            Category = product.Category == null ? null : new CategoryViewModel
+            {
+                Id = product.Category.Id,
+                Name = product.Category.Name
+            },
+            Auctions = product.Auctions.Select(a => new AuctionViewModel
+            {
+                Id = a.Id,
+                StartDateTime = a.StartDateTime,
+                DurationInSeconds = a.DurationInSeconds
+            }).ToList()
         };
 
         return productViewModel;
     }
-
+    
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Post([FromForm] ProductRequest productRequest)
     {
-        Category? category = _categoryService.GetById(productRequest.CategoryId);
-        if (category == null)
+        if (!_categoryService.Exists(productRequest.CategoryId))
         {
             return NotFound(new { Message = "Category not found" });
         }
@@ -98,7 +106,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            Category = category
+            CategoryId = productRequest.CategoryId
         };
 
         _productService.Create(product);
@@ -106,12 +114,12 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Put(int id, [FromForm] ProductRequest productRequest)
     {
-        Category? category = _categoryService.GetById(productRequest.CategoryId);
-        if (category == null)
+        if (!_categoryService.Exists(productRequest.CategoryId))
         {
             return NotFound(new { Message = "Category not found" });
         }
@@ -132,7 +140,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            Category = category
+            CategoryId = productRequest.CategoryId
         };
 
         _productService.Update(product);
@@ -140,6 +148,7 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public void Delete(int id)
     {
