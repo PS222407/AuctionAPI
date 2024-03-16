@@ -27,8 +27,4 @@
       <ProjectReference Include="..\AuctionAPI_30_DataAccess\AuctionAPI_30_DataAccess.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\" />
-    </ItemGroup>
-
 </Project>

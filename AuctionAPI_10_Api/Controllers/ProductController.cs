@@ -88,7 +88,7 @@ public class ProductController : ControllerBase
         {
             imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
         }
-        catch (FileFormatException e)
+        catch (FileFormatException)
         {
             return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } }});
         }
