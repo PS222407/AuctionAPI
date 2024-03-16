@@ -31,6 +31,7 @@ public class AuctionRepository : IAuctionRepository
     {
         return _dbContext.Auctions
             .Include(a => a.Product)
+            .Include(a => a.Bids)
             .FirstOrDefault(a => a.Id == id);
     }
 

@@ -11,7 +11,7 @@ public class AuctionService : IAuctionService
     {
         _auctionRepository = auctionRepository;
     }
-    
+
     public List<Auction> Get()
     {
         return _auctionRepository.Get();
@@ -35,5 +35,20 @@ public class AuctionService : IAuctionService
     public bool Delete(long id)
     {
         return _auctionRepository.Delete(id);
+    }
+
+    public bool IsRunning(long id)
+    {
+        Auction? auction = _auctionRepository.GetById(id);
+        if (auction == null)
+        {
+            return false;
+        }
+
+        TimeZoneInfo amsterdamZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+        DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, amsterdamZone);
+        DateTime endDateTime = auction.StartDateTime.AddSeconds(auction.DurationInSeconds);
+
+        return now > auction.StartDateTime && now < endDateTime;
     }
 }
