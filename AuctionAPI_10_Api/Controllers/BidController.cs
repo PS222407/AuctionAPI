@@ -1,10 +1,13 @@
 using System.Security.Claims;
-using AuctionAPI_10_Api.RequestModels;
+using AuctionAPI_10_Api.Hub;
+using AuctionAPI_10_Api.Hub.Requests;
 using AuctionAPI_20_BusinessLogic.Exceptions;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using BidRequest = AuctionAPI_10_Api.RequestModels.BidRequest;
 
 namespace AuctionAPI_10_Api.Controllers;
 
@@ -13,12 +16,13 @@ namespace AuctionAPI_10_Api.Controllers;
 public class BidController : ControllerBase
 {
     private readonly IBidService _bidService;
-    private readonly IAuctionService _auctionService;
-
-    public BidController(IBidService bidService, IAuctionService auctionService)
+    
+    private readonly IHubContext<MainHub, IMainHubClient> _hubContext;
+    
+    public BidController(IBidService bidService, IHubContext<MainHub, IMainHubClient> hubContext)
     {
         _bidService = bidService;
-        _auctionService = auctionService;
+        _hubContext = hubContext;
     }
 
     [Authorize]
@@ -27,11 +31,11 @@ public class BidController : ControllerBase
     {
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
+        TimeZoneInfo amsterdamZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+        DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, amsterdamZone);
+        
         try
         {
-            TimeZoneInfo amsterdamZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
-            DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, amsterdamZone);
-
             _bidService.Create(new Bid
             {
                 AuctionId = bidRequest.AuctionId,
@@ -48,7 +52,20 @@ public class BidController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-
+        
+        Hub.Requests.BidRequest br = new()
+        {
+            User = new UserRequest
+            {
+                Id = userId,
+                Name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value,
+                Email = User.Claims.First(c => c.Type == ClaimTypes.Email).Value,
+            },
+            PriceInCents = bidRequest.PriceInCents,
+            CreatedAt = now,
+        };
+        _hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
+        
         return Ok();
     }
 }
