@@ -9,4 +9,9 @@ public class MainHub : Hub<IMainHubClient>
     {
         await Clients.All.ReceiveMessage(chatRequest);
     }
+    
+    public async Task AddToAuctionGroup(AuctionGroupRequest auctionGroupRequest)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, auctionGroupRequest.GroupName);
+    }
 }

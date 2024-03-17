@@ -5,4 +5,6 @@ namespace AuctionAPI_10_Api.Hub;
 public interface IMainHubClient
 {
     Task ReceiveMessage(ChatRequest chatRequest);
+
+    Task ReceiveBids(BidRequest bidRequest);
 }
