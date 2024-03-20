@@ -35,7 +35,7 @@ public class AuctionController : ControllerBase
                 Id = a.Product.Id,
                 Name = a.Product.Name,
                 Description = a.Product.Description,
-                ImageUrl = $"{_configuration["BackendUrl"]}{a.Product.ImageUrl}"
+                ImageUrl = a.Product.ImageIsExternal ? a.Product.ImageUrl : $"{_configuration["BackendUrl"]}{a.Product.ImageUrl}",
             },
             DurationInSeconds = a.DurationInSeconds,
             StartDateTime = a.StartDateTime,
@@ -59,7 +59,7 @@ public class AuctionController : ControllerBase
                 Id = auction.Product.Id,
                 Name = auction.Product.Name,
                 Description = auction.Product.Description,
-                ImageUrl = $"{_configuration["BackendUrl"]}{auction.Product.ImageUrl}"
+                ImageUrl = auction.Product.ImageIsExternal ? auction.Product.ImageUrl : $"{_configuration["BackendUrl"]}{auction.Product.ImageUrl}",
             },
             DurationInSeconds = auction.DurationInSeconds,
             StartDateTime = auction.StartDateTime,

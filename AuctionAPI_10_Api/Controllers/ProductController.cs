@@ -46,7 +46,7 @@ public class ProductController : ControllerBase
             Id = x.Id,
             Name = x.Name,
             Description = x.Description,
-            ImageUrl = $"{_configuration["BackendUrl"]}{x.ImageUrl}"
+            ImageUrl = x.ImageIsExternal ? x.ImageUrl : $"{_configuration["BackendUrl"]}{x.ImageUrl}"
         });
     }
 
@@ -64,7 +64,7 @@ public class ProductController : ControllerBase
             Id = product.Id,
             Name = product.Name,
             Description = product.Description,
-            ImageUrl = $"{_configuration["BackendUrl"]}{product.ImageUrl}",
+            ImageUrl = product.ImageIsExternal ? product.ImageUrl : $"{_configuration["BackendUrl"]}{product.ImageUrl}",
             Category = product.Category == null ? null : new CategoryViewModel
             {
                 Id = product.Category.Id,

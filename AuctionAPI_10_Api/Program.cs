@@ -7,7 +7,6 @@ using AuctionAPI_30_DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using MySqlConnector;
 using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -98,34 +97,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<MainHub>("/api/mainHub");
-
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    RoleManager<IdentityRole> roleManager =
-        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    string[] roles = { "Admin", "Employee" };
-
-    foreach (string role in roles)
-    {
-        try
-        {
-            if (!await roleManager.RoleExistsAsync(role))
-            {
-                await roleManager.CreateAsync(new IdentityRole(role));
-            }
-        }
-        catch (MySqlException)
-        {
-        }
-    }
-}
-
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    IServiceProvider services = scope.ServiceProvider;
-
-    SeedData.Initialize(services);
-}
 
 app.Run();

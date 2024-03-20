@@ -51,7 +51,7 @@ public class CategoryController : ControllerBase
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                ImageUrl = $"{_configuration["BackendUrl"]}{p.ImageUrl}"
+                ImageUrl = p.ImageIsExternal ? p.ImageUrl : $"{_configuration["BackendUrl"]}{p.ImageUrl}"
             }).ToList()
         };
         
