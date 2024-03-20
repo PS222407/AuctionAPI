@@ -6,7 +6,7 @@ namespace AuctionAPI_20_BusinessLogic.Services;
 public class RoleService : IRoleService
 {
     private readonly IRoleRepository _roleRepository;
-    
+
     public RoleService(IRoleRepository roleRepository)
     {
         _roleRepository = roleRepository;
@@ -14,7 +14,7 @@ public class RoleService : IRoleService
 
     public IEnumerable<IdentityRole> Get()
     {
-       return _roleRepository.Get();
+        return _roleRepository.Get();
     }
 
     public async Task<IdentityUser?> AttachRoleToUser(string roleName, string userId)

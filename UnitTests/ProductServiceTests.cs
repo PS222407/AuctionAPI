@@ -24,7 +24,7 @@ public class ProductServiceTests
         List<Product> products =
         [
             new Product { Id = 1, Name = "Product 1" },
-            new Product { Id = 2, Name = "Product 2" }
+            new Product { Id = 2, Name = "Product 2" },
         ];
         _productRepositoryMock.Setup(x => x.Get())
             .Returns(products);
@@ -35,7 +35,7 @@ public class ProductServiceTests
         // Assert
         Assert.That(result, Is.EqualTo(products));
     }
-    
+
     [Test]
     public void Create_ShouldCreateProduct()
     {
@@ -50,7 +50,7 @@ public class ProductServiceTests
         // Assert
         Assert.That(result, Is.True);
     }
-    
+
     [Test]
     public void GetById_ShouldReturnProduct()
     {
@@ -65,7 +65,7 @@ public class ProductServiceTests
         // Assert
         Assert.That(result, Is.EqualTo(product));
     }
-    
+
     [Test]
     public void Update_ShouldUpdateProduct()
     {
@@ -80,7 +80,7 @@ public class ProductServiceTests
         // Assert
         Assert.That(result, Is.True);
     }
-    
+
     [Test]
     public void Delete_ShouldDeleteProduct()
     {

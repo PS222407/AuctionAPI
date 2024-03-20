@@ -1,8 +1,8 @@
+using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using AuctionAPI_10_Api.RequestModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;
 
@@ -10,9 +10,9 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class RoleController : ControllerBase
 {
-    private readonly SignInManager<IdentityUser> _signInManager;
-
     private readonly IRoleService _roleService;
+
+    private readonly SignInManager<IdentityUser> _signInManager;
 
     public RoleController(IRoleService roleService, SignInManager<IdentityUser> signInManager)
     {
@@ -25,7 +25,7 @@ public class RoleController : ControllerBase
     {
         return _roleService.Get().Select(x => new RoleViewModel
         {
-            Name = x.Name
+            Name = x.Name,
         });
     }
 
@@ -37,9 +37,9 @@ public class RoleController : ControllerBase
         {
             return NotFound(new { Message = "User not found" });
         }
-        
+
         await _signInManager.RefreshSignInAsync(user);
-        
+
         return Ok();
     }
 

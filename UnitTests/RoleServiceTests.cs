@@ -9,14 +9,14 @@ namespace UnitTests;
 public class RoleServiceTests
 {
     private readonly RoleService _roleService;
-    
+
     private readonly Mock<IRoleRepository> _roleRepositoryMock = new();
 
     public RoleServiceTests()
     {
         _roleService = new RoleService(_roleRepositoryMock.Object);
     }
-    
+
     [Test]
     public void GetAll_ShouldReturnAllRoles()
     {
@@ -24,18 +24,18 @@ public class RoleServiceTests
         List<IdentityRole> roles =
         [
             new IdentityRole { Name = "Role 1" },
-            new IdentityRole { Name = "Role 2" }
+            new IdentityRole { Name = "Role 2" },
         ];
         _roleRepositoryMock.Setup(x => x.Get())
             .Returns(roles);
-        
+
         // Act
         IEnumerable<IdentityRole> result = _roleService.Get();
-        
+
         // Assert
         Assert.That(result, Is.EqualTo(roles));
     }
-    
+
     [Test]
     public void AttachRoleToUser_ShouldAttachRoleToUser()
     {
@@ -43,14 +43,14 @@ public class RoleServiceTests
         IdentityUser user = new() { Id = "1" };
         _roleRepositoryMock.Setup(x => x.AttachRoleToUser("Role", "1"))
             .ReturnsAsync(user);
-        
+
         // Act
         IdentityUser result = _roleService.AttachRoleToUser("Role", "1").Result;
-        
+
         // Assert
         Assert.That(result, Is.EqualTo(user));
     }
-    
+
     [Test]
     public void RevokeRoleFromUser_ShouldRevokeRoleFromUser()
     {
@@ -58,10 +58,10 @@ public class RoleServiceTests
         IdentityUser user = new() { Id = "1" };
         _roleRepositoryMock.Setup(x => x.RevokeRoleFromUser("Role", "1"))
             .ReturnsAsync(user);
-        
+
         // Act
         IdentityUser result = _roleService.RevokeRoleFromUser("Role", "1").Result;
-        
+
         // Assert
         Assert.That(result, Is.EqualTo(user));
     }

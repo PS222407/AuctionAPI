@@ -27,10 +27,10 @@ public class UserServiceTests
         ];
         _userRepositoryMock.Setup(x => x.SearchByEmail("test"))
             .Returns(users);
-        
+
         // Act
         List<IdentityUser> result = _userService.SearchByEmail("test");
-        
+
         // Assert
         Assert.That(result, Is.EqualTo(users));
     }

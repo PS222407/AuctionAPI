@@ -49,7 +49,7 @@ public class AuctionRepository : IAuctionRepository
         {
             return false;
         }
-        
+
         _dbContext.Auctions.Remove(auction);
         return _dbContext.SaveChanges() > 0;
     }

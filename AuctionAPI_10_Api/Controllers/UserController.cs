@@ -24,7 +24,7 @@ public class UserController : ControllerBase
         {
             Id = x.Id,
             Name = x.UserName,
-            Email = x.Email
+            Email = x.Email,
         });
     }
 

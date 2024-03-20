@@ -36,13 +36,14 @@ builder.Services.AddSwaggerGen(options =>
     {
         In = ParameterLocation.Header,
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
+        Type = SecuritySchemeType.ApiKey,
     });
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                          throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(
         connectionString,
@@ -77,7 +78,7 @@ app.UseCors();
 app.UseStaticFiles(new StaticFileOptions
 {
     ServeUnknownFileTypes = true,
-    RequestPath = "/api"
+    RequestPath = "/api",
 });
 
 // // Configure the HTTP request pipeline.

@@ -13,15 +13,15 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
-    private readonly IProductService _productService;
-
     private readonly ICategoryService _categoryService;
+
+    private readonly IConfiguration _configuration;
 
     private readonly FileService _fileService;
 
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IProductService _productService;
 
-    private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public ProductController(
         FileService fileService,
@@ -46,7 +46,7 @@ public class ProductController : ControllerBase
             Id = x.Id,
             Name = x.Name,
             Description = x.Description,
-            ImageUrl = x.ImageIsExternal ? x.ImageUrl : $"{_configuration["BackendUrl"]}{x.ImageUrl}"
+            ImageUrl = x.ImageIsExternal ? x.ImageUrl : $"{_configuration["BackendUrl"]}{x.ImageUrl}",
         });
     }
 
@@ -65,22 +65,24 @@ public class ProductController : ControllerBase
             Name = product.Name,
             Description = product.Description,
             ImageUrl = product.ImageIsExternal ? product.ImageUrl : $"{_configuration["BackendUrl"]}{product.ImageUrl}",
-            Category = product.Category == null ? null : new CategoryViewModel
-            {
-                Id = product.Category.Id,
-                Name = product.Category.Name
-            },
+            Category = product.Category == null
+                ? null
+                : new CategoryViewModel
+                {
+                    Id = product.Category.Id,
+                    Name = product.Category.Name,
+                },
             Auctions = product.Auctions.Select(a => new AuctionViewModel
             {
                 Id = a.Id,
                 StartDateTime = a.StartDateTime,
-                DurationInSeconds = a.DurationInSeconds
-            }).ToList()
+                DurationInSeconds = a.DurationInSeconds,
+            }).ToList(),
         };
 
         return productViewModel;
     }
-    
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [Consumes("multipart/form-data")]
@@ -98,7 +100,7 @@ public class ProductController : ControllerBase
         }
         catch (FileFormatException)
         {
-            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } }});
+            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } } });
         }
 
         Product product = new()
@@ -106,7 +108,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId
+            CategoryId = productRequest.CategoryId,
         };
 
         _productService.Create(product);
@@ -123,7 +125,7 @@ public class ProductController : ControllerBase
         {
             return NotFound(new { Message = "Category not found" });
         }
-        
+
         string imageUrl;
         try
         {
@@ -131,7 +133,7 @@ public class ProductController : ControllerBase
         }
         catch (FileFormatException)
         {
-            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } }});
+            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } } });
         }
 
         Product product = new()
@@ -140,7 +142,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId
+            CategoryId = productRequest.CategoryId,
         };
 
         _productService.Update(product);

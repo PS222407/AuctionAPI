@@ -12,7 +12,7 @@ public class BidRepository : IBidRepository
     {
         _dbContext = dbContext;
     }
-    
+
     public bool Create(Bid bid)
     {
         _dbContext.Bids.Add(bid);

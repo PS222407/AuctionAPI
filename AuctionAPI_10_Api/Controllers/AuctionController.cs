@@ -12,18 +12,19 @@ namespace AuctionAPI_10_Api.Controllers;
 public class AuctionController : ControllerBase
 {
     private readonly IAuctionService _auctionService;
-    
+
     private readonly IConfiguration _configuration;
-    
+
     private readonly IProductService _productService;
 
-    public AuctionController(IAuctionService auctionService, IConfiguration configuration, IProductService productService)
+    public AuctionController(IAuctionService auctionService, IConfiguration configuration,
+        IProductService productService)
     {
         _auctionService = auctionService;
         _configuration = configuration;
         _productService = productService;
     }
-    
+
     [HttpGet]
     public IEnumerable<AuctionViewModel> Get()
     {
@@ -35,14 +36,16 @@ public class AuctionController : ControllerBase
                 Id = a.Product.Id,
                 Name = a.Product.Name,
                 Description = a.Product.Description,
-                ImageUrl = a.Product.ImageIsExternal ? a.Product.ImageUrl : $"{_configuration["BackendUrl"]}{a.Product.ImageUrl}",
+                ImageUrl = a.Product.ImageIsExternal
+                    ? a.Product.ImageUrl
+                    : $"{_configuration["BackendUrl"]}{a.Product.ImageUrl}",
             },
             DurationInSeconds = a.DurationInSeconds,
             StartDateTime = a.StartDateTime,
         });
     }
-    
-    [HttpGet("{id}")]
+
+    [HttpGet("{id:int}")]
     public AuctionViewModel? Get(int id)
     {
         Auction? auction = _auctionService.GetById(id);
@@ -50,7 +53,7 @@ public class AuctionController : ControllerBase
         {
             return null;
         }
-        
+
         AuctionViewModel auctionViewModel = new()
         {
             Id = auction.Id,
@@ -59,7 +62,9 @@ public class AuctionController : ControllerBase
                 Id = auction.Product.Id,
                 Name = auction.Product.Name,
                 Description = auction.Product.Description,
-                ImageUrl = auction.Product.ImageIsExternal ? auction.Product.ImageUrl : $"{_configuration["BackendUrl"]}{auction.Product.ImageUrl}",
+                ImageUrl = auction.Product.ImageIsExternal
+                    ? auction.Product.ImageUrl
+                    : $"{_configuration["BackendUrl"]}{auction.Product.ImageUrl}",
             },
             DurationInSeconds = auction.DurationInSeconds,
             StartDateTime = auction.StartDateTime,
@@ -73,10 +78,10 @@ public class AuctionController : ControllerBase
                     Name = b.User.UserName,
                     Email = b.User.Email,
                 },
-                CreatedAt = b.CreatedAt
-            }).ToList()
+                CreatedAt = b.CreatedAt,
+            }).ToList(),
         };
-        
+
         return auctionViewModel;
     }
 
@@ -88,28 +93,28 @@ public class AuctionController : ControllerBase
         {
             return BadRequest("Product not found");
         }
-        
+
         Auction auction = new()
         {
             ProductId = auctionRequest.ProductId,
             DurationInSeconds = auctionRequest.DurationInSeconds,
             StartDateTime = auctionRequest.StartDateTime,
         };
-        
+
         _auctionService.Create(auction);
 
         return Ok();
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public IActionResult Put(int id, [FromBody] AuctionRequest auctionRequest)
     {
         if (!_productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
         }
-        
+
         Auction auction = new()
         {
             Id = id,
@@ -117,14 +122,14 @@ public class AuctionController : ControllerBase
             DurationInSeconds = auctionRequest.DurationInSeconds,
             StartDateTime = auctionRequest.StartDateTime,
         };
-        
+
         _auctionService.Update(auction);
 
         return Ok();
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public void Delete(int id)
     {
         _auctionService.Delete(id);

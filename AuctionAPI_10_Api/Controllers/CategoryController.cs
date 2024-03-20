@@ -12,15 +12,15 @@ namespace AuctionAPI_10_Api.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
-    
+
     private readonly IConfiguration _configuration;
-    
+
     public CategoryController(ICategoryService categoryService, IConfiguration configuration)
     {
         _categoryService = categoryService;
         _configuration = configuration;
     }
-    
+
     [HttpGet]
     public IEnumerable<CategoryViewModel> Get()
     {
@@ -28,11 +28,11 @@ public class CategoryController : ControllerBase
         {
             Id = c.Id,
             Name = c.Name,
-            Icon = c.Icon
+            Icon = c.Icon,
         });
     }
-    
-    [HttpGet("{id}")]
+
+    [HttpGet("{id:int}")]
     public CategoryViewModel? Get(int id)
     {
         Category? category = _categoryService.GetById(id);
@@ -40,7 +40,7 @@ public class CategoryController : ControllerBase
         {
             return null;
         }
-        
+
         CategoryViewModel categoryViewModel = new()
         {
             Id = category.Id,
@@ -51,10 +51,10 @@ public class CategoryController : ControllerBase
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                ImageUrl = p.ImageIsExternal ? p.ImageUrl : $"{_configuration["BackendUrl"]}{p.ImageUrl}"
-            }).ToList()
+                ImageUrl = p.ImageIsExternal ? p.ImageUrl : $"{_configuration["BackendUrl"]}{p.ImageUrl}",
+            }).ToList(),
         };
-        
+
         return categoryViewModel;
     }
 
@@ -67,26 +67,26 @@ public class CategoryController : ControllerBase
             Name = categoryRequest.Name,
             Icon = categoryRequest.Icon,
         };
-        
+
         _categoryService.Create(category);
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public void Put(int id, [FromBody] CategoryRequest categoryRequest)
     {
         Category category = new()
         {
             Id = id,
             Name = categoryRequest.Name,
-            Icon = categoryRequest.Icon
+            Icon = categoryRequest.Icon,
         };
-        
+
         _categoryService.Update(category);
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public void Delete(int id)
     {
         _categoryService.Delete(id);

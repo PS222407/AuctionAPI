@@ -16,7 +16,7 @@ public class CategoryService : ICategoryService
     {
         return _categoryRepository.Get();
     }
-    
+
     public bool Create(Category category)
     {
         return _categoryRepository.Create(category);
@@ -26,12 +26,12 @@ public class CategoryService : ICategoryService
     {
         return _categoryRepository.GetById(id);
     }
-    
+
     public bool Update(Category category)
     {
         return _categoryRepository.Update(category);
     }
-    
+
     public bool Delete(long id)
     {
         return _categoryRepository.Delete(id);

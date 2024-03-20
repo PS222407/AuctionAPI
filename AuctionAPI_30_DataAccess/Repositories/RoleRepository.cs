@@ -5,9 +5,9 @@ namespace AuctionAPI_30_DataAccess.Repositories;
 
 public class RoleRepository : IRoleRepository
 {
-    private readonly UserManager<IdentityUser> _userManager;
-
     private readonly RoleManager<IdentityRole> _roleManager;
+
+    private readonly UserManager<IdentityUser> _userManager;
 
     public RoleRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
     {
@@ -27,7 +27,7 @@ public class RoleRepository : IRoleRepository
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
-        
+
         return user;
     }
 
@@ -38,7 +38,7 @@ public class RoleRepository : IRoleRepository
         {
             await _userManager.RemoveFromRoleAsync(user, roleName);
         }
-        
+
         return user;
     }
 }

@@ -13,12 +13,12 @@ public class SeederController : ControllerBase
     {
         _dbContext = dbContext;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Seed()
     {
         await new SeedData(_dbContext).ResetDatabaseAndSeed();
-        
+
         return Ok();
     }
 }

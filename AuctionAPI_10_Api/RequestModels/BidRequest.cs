@@ -3,6 +3,6 @@
 public class BidRequest
 {
     public long AuctionId { get; set; }
-    
+
     public int PriceInCents { get; set; }
 }

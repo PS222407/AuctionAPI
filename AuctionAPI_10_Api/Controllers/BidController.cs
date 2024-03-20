@@ -16,9 +16,9 @@ namespace AuctionAPI_10_Api.Controllers;
 public class BidController : ControllerBase
 {
     private readonly IBidService _bidService;
-    
+
     private readonly IHubContext<MainHub, IMainHubClient> _hubContext;
-    
+
     public BidController(IBidService bidService, IHubContext<MainHub, IMainHubClient> hubContext)
     {
         _bidService = bidService;
@@ -33,7 +33,7 @@ public class BidController : ControllerBase
 
         TimeZoneInfo amsterdamZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
         DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, amsterdamZone);
-        
+
         try
         {
             _bidService.Create(new Bid
@@ -52,7 +52,7 @@ public class BidController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        
+
         Hub.Requests.BidRequest br = new()
         {
             User = new UserRequest
@@ -65,7 +65,7 @@ public class BidController : ControllerBase
             CreatedAt = now,
         };
         _hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
-        
+
         return Ok();
     }
 }

@@ -6,9 +6,9 @@ namespace AuctionAPI_20_BusinessLogic.Services;
 
 public class BidService : IBidService
 {
-    private readonly IBidRepository _bidRepository;
-
     private readonly IAuctionService _auctionService;
+
+    private readonly IBidRepository _bidRepository;
 
     public BidService(IBidRepository bidRepository, IAuctionService auctionService)
     {
