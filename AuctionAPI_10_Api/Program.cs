@@ -32,7 +32,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IValidator<BidRequest>, BidRequestValidator>();
 builder.Services.AddScoped<IValidator<AuctionRequest>, AuctionRequestValidator>();
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
-builder.Services.AddScoped<IValidator<ProductRequest>, ProductRequestValidator>();
+builder.Services.AddScoped<IValidator<ProductCreateRequest>, ProductCreateRequestValidator>();
+builder.Services.AddScoped<IValidator<ProductUpdateRequest>, ProductUpdateRequestValidator>();
 
 builder.Services.AddSignalR();
 

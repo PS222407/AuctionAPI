@@ -1,6 +1,6 @@
 ﻿namespace AuctionAPI_10_Api.RequestModels;
 
-public class ProductRequest
+public class ProductCreateRequest
 {
     public string? Name { get; set; }
 

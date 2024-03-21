@@ -57,11 +57,15 @@ public class BidController : ControllerBase
         }
         catch (AuctionNotAvailableException e)
         {
-            return NotFound(e.Message);
+            return NotFound(new {
+                Message = e.Message
+            });
         }
         catch (BidTooLowException e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new {
+                Message = e.Message,
+            });
         }
 
         Hub.Requests.BidRequest br = new()
@@ -77,6 +81,6 @@ public class BidController : ControllerBase
         };
         await _hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
 
-        return Ok();
+        return NoContent();
     }
 }
