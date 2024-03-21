@@ -45,7 +45,7 @@ public class RoleServiceTests
             .ReturnsAsync(user);
 
         // Act
-        IdentityUser result = _roleService.AttachRoleToUser("Role", "1").Result;
+        IdentityUser? result = _roleService.AttachRoleToUser("Role", "1").Result;
 
         // Assert
         Assert.That(result, Is.EqualTo(user));
@@ -60,7 +60,7 @@ public class RoleServiceTests
             .ReturnsAsync(user);
 
         // Act
-        IdentityUser result = _roleService.RevokeRoleFromUser("Role", "1").Result;
+        IdentityUser? result = _roleService.RevokeRoleFromUser("Role", "1").Result;
 
         // Assert
         Assert.That(result, Is.EqualTo(user));

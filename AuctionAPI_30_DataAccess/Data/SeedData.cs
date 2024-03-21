@@ -25,6 +25,9 @@ public class SeedData
             SeedUsersAndRoles();
             SeedCategories();
             SeedProducts();
+            await _dbContext.SaveChangesAsync();
+            SeedAuctions();
+            SeedBids();
 
             await _dbContext.SaveChangesAsync();
         }
@@ -36,15 +39,26 @@ public class SeedData
 
     private void SeedUsersAndRoles()
     {
-        _dbContext.Users.AddRange(new IdentityUser
-        {
-            Id = "0206A018-5AC6-492D-AB99-10105193D384",
-            Email = "admin@gmail.com",
-            NormalizedEmail = "admin@gmail.com",
-            UserName = "admin@gmail.com",
-            NormalizedUserName = "admin@gmail.com",
-            PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, "Password123!"),
-        });
+        _dbContext.Users.AddRange(
+            new IdentityUser
+            {
+                Id = "0206A018-5AC6-492D-AB99-10105193D384",
+                Email = "admin@gmail.com",
+                NormalizedEmail = "admin@gmail.com",
+                UserName = "admin@gmail.com",
+                NormalizedUserName = "admin@gmail.com",
+                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, "Password123!"),
+            },
+            new IdentityUser
+            {
+                Id = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                Email = "employee@gmail.com",
+                NormalizedEmail = "employee@gmail.com",
+                UserName = "employee@gmail.com",
+                NormalizedUserName = "employee@gmail.com",
+                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, "Password123!"),
+            }
+        );
 
         _dbContext.Roles.AddRange(
             new IdentityRole
@@ -57,11 +71,18 @@ public class SeedData
             }
         );
 
-        _dbContext.UserRoles.Add(new IdentityUserRole<string>
-        {
-            UserId = "0206A018-5AC6-492D-AB99-10105193D384",
-            RoleId = "8977148E-C765-410F-9A58-0C7D054E4536",
-        });
+        _dbContext.UserRoles.AddRange(
+            new IdentityUserRole<string>
+            {
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                RoleId = "8977148E-C765-410F-9A58-0C7D054E4536",
+            },
+            new IdentityUserRole<string>
+            {
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                RoleId = "81659B09-5665-4E61-ACB9-5C43E28BE6A4",
+            }
+        );
     }
 
     private void SeedCategories()
@@ -154,6 +175,159 @@ public class SeedData
                 ImageIsExternal = true,
                 ImageUrl = "https://www.culy.nl/wp-content/uploads/2023/09/3_pasta-all-assassina-recept-1024x683.jpg",
                 CategoryId = 3,
+            }
+        );
+    }
+
+    private void SeedAuctions()
+    {
+        _dbContext.Auctions.AddRange(
+            new Auction
+            {
+                Id = 1,
+                ProductId = 1,
+                StartDateTime = DateTime.Parse("2023-09-01T12:00:00"),
+                DurationInSeconds = 3600,
+            },
+            new Auction
+            {
+                Id = 2,
+                ProductId = 2,
+                StartDateTime = DateTime.Parse("2023-09-01T12:00:00"),
+                DurationInSeconds = 3600,
+            },
+            new Auction
+            {
+                Id = 3,
+                ProductId = 3,
+                StartDateTime = DateTime.Parse("2023-09-01T12:00:00"),
+                DurationInSeconds = 3600,
+            }
+        );
+    }
+
+    private void SeedBids()
+    {
+        _dbContext.Bids.AddRange(
+            new Bid
+            {
+                Id = 1,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 1,
+                PriceInCents = 1000,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 2,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 1,
+                PriceInCents = 1100,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 3,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 1,
+                PriceInCents = 1200,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 4,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 1,
+                PriceInCents = 1300,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 5,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 1,
+                PriceInCents = 1400,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 6,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 1,
+                PriceInCents = 1500,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 7,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 1,
+                PriceInCents = 1600,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 8,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 1,
+                PriceInCents = 1700,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 9,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 1,
+                PriceInCents = 1800,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 10,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 2,
+                PriceInCents = 1000,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 11,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 2,
+                PriceInCents = 1100,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 12,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 3,
+                PriceInCents = 1200,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 13,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 3,
+                PriceInCents = 1300,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 14,
+                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
+                AuctionId = 3,
+                PriceInCents = 1400,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            },
+            new Bid
+            {
+                Id = 15,
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                AuctionId = 3,
+                PriceInCents = 1500,
+                CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
             }
         );
     }

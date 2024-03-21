@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AuctionAPI_10_Api.Hub;
 using AuctionAPI_10_Api.Services;
 using AuctionAPI_20_BusinessLogic.Interfaces;
