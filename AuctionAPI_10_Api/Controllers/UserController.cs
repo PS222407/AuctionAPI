@@ -1,12 +1,8 @@
 ﻿using System.Security.Claims;
 using AuctionAPI_10_Api.ViewModels;
-using AuctionAPI_20_BusinessLogic.DataModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
-using AuctionAPI_20_BusinessLogic.Models;
-using AuctionAPI_30_DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AuctionAPI_10_Api.Controllers;
 
@@ -16,14 +12,11 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
 
-    private DataContext _context;
-
     private readonly IConfiguration _configuration;
 
-    public UserController(IUserService userService, DataContext context, IConfiguration configuration)
+    public UserController(IUserService userService, IConfiguration configuration)
     {
         _userService = userService;
-        _context = context;
         _configuration = configuration;
     }
 
@@ -40,14 +33,8 @@ public class UserController : ControllerBase
 
     [HttpGet("Info")]
     [Authorize]
-    public List<string>? GetInfo()
+    public List<string> GetInfo()
     {
-        string? id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        if (id == null)
-        {
-            return null;
-        }
-
         return User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(r => r.Value).ToList();
     }
 

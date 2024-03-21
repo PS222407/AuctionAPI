@@ -1,10 +1,12 @@
-using System.Text.Json.Serialization;
 using AuctionAPI_10_Api.Hub;
+using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.Services;
+using AuctionAPI_10_Api.Validators;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Services;
 using AuctionAPI_30_DataAccess.Data;
 using AuctionAPI_30_DataAccess.Repositories;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -26,6 +28,11 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IValidator<BidRequest>, BidRequestValidator>();
+builder.Services.AddScoped<IValidator<AuctionRequest>, AuctionRequestValidator>();
+builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
+builder.Services.AddScoped<IValidator<ProductRequest>, ProductRequestValidator>();
 
 builder.Services.AddSignalR();
 

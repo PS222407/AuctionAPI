@@ -2,6 +2,8 @@
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +19,15 @@ public class AuctionController : ControllerBase
 
     private readonly IProductService _productService;
 
+    private readonly IValidator<AuctionRequest> _validator;
+
     public AuctionController(IAuctionService auctionService, IConfiguration configuration,
-        IProductService productService)
+        IProductService productService, IValidator<AuctionRequest> validator)
     {
         _auctionService = auctionService;
         _configuration = configuration;
         _productService = productService;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -46,12 +51,12 @@ public class AuctionController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public AuctionViewModel? Get(int id)
+    public IActionResult Get(int id)
     {
         Auction? auction = _auctionService.GetById(id);
         if (auction == null)
         {
-            return null;
+            return NotFound();
         }
 
         AuctionViewModel auctionViewModel = new()
@@ -82,13 +87,19 @@ public class AuctionController : ControllerBase
             }).ToList(),
         };
 
-        return auctionViewModel;
+        return Ok(auctionViewModel);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult Post([FromBody] AuctionRequest auctionRequest)
     {
+        ValidationResult result = _validator.Validate(auctionRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+
         if (!_productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
@@ -110,6 +121,17 @@ public class AuctionController : ControllerBase
     [HttpPut("{id:int}")]
     public IActionResult Put(int id, [FromBody] AuctionRequest auctionRequest)
     {
+        if (!_auctionService.Exists(id))
+        {
+            return NotFound();
+        }
+
+        ValidationResult result = _validator.Validate(auctionRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+
         if (!_productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
@@ -130,8 +152,15 @@ public class AuctionController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
-    public void Delete(int id)
+    public IActionResult Delete(int id)
     {
+        if (!_auctionService.Exists(id))
+        {
+            return NotFound();
+        }
+
         _auctionService.Delete(id);
+
+        return NoContent();
     }
 }
