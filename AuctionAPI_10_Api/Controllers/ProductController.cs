@@ -3,6 +3,8 @@ using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.ProjectModel;
@@ -23,19 +25,22 @@ public class ProductController : ControllerBase
 
     private readonly IWebHostEnvironment _webHostEnvironment;
 
+    private readonly IValidator<ProductRequest> _validator;
+
     public ProductController(
         FileService fileService,
         IProductService productService,
         IWebHostEnvironment webHostEnvironment,
         IConfiguration configuration,
-        ICategoryService categoryService
-    )
+        ICategoryService categoryService, 
+        IValidator<ProductRequest> validator)
     {
         _productService = productService;
         _fileService = fileService;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
         _categoryService = categoryService;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -51,12 +56,12 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public ProductViewModel? Get(long id)
+    public IActionResult Get(long id)
     {
         Product? product = _productService.GetById(id);
         if (product == null)
         {
-            return null;
+            return NotFound();
         }
 
         ProductViewModel productViewModel = new()
@@ -80,7 +85,7 @@ public class ProductController : ControllerBase
             }).ToList(),
         };
 
-        return productViewModel;
+        return Ok(productViewModel);
     }
 
     [Authorize(Roles = "Admin")]
@@ -88,9 +93,15 @@ public class ProductController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Post([FromForm] ProductRequest productRequest)
     {
-        if (!_categoryService.Exists(productRequest.CategoryId))
+        ValidationResult result = await _validator.ValidateAsync(productRequest);
+        if (!result.IsValid)
         {
-            return NotFound(new { Message = "Category not found" });
+            return BadRequest(result.Errors);
+        }
+
+        if (!_categoryService.Exists(productRequest.CategoryId ?? 0))
+        {
+            return BadRequest(new { Message = "Category not found" });
         }
 
         string imageUrl;
@@ -108,7 +119,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId,
+            CategoryId = productRequest.CategoryId ?? 0,
         };
 
         _productService.Create(product);
@@ -121,7 +132,17 @@ public class ProductController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Put(int id, [FromForm] ProductRequest productRequest)
     {
-        if (!_categoryService.Exists(productRequest.CategoryId))
+        if (!_categoryService.Exists(id))
+        {
+            return NotFound();
+        }
+        ValidationResult result = await _validator.ValidateAsync(productRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+        
+        if (!_categoryService.Exists(productRequest.CategoryId ?? 0))
         {
             return NotFound(new { Message = "Category not found" });
         }
@@ -142,7 +163,7 @@ public class ProductController : ControllerBase
             Name = productRequest.Name,
             Description = productRequest.Description,
             ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId,
+            CategoryId = productRequest.CategoryId ?? 0,
         };
 
         _productService.Update(product);
@@ -152,8 +173,15 @@ public class ProductController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
-    public void Delete(int id)
+    public IActionResult Delete(int id)
     {
+        if (!_productService.Exists(id))
+        {
+            return NotFound();
+        }
+        
         _productService.Delete(id);
+        
+        return NoContent();
     }
 }

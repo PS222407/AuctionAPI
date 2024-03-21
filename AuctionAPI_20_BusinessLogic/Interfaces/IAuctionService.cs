@@ -15,4 +15,6 @@ public interface IAuctionService
     public bool Delete(long id);
 
     public bool IsRunning(long id);
+
+    public bool Exists(int id);
 }

@@ -2,6 +2,8 @@ using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +17,13 @@ public class CategoryController : ControllerBase
 
     private readonly IConfiguration _configuration;
 
-    public CategoryController(ICategoryService categoryService, IConfiguration configuration)
+    private readonly IValidator<CategoryRequest> _validator;
+
+    public CategoryController(ICategoryService categoryService, IConfiguration configuration, IValidator<CategoryRequest> validator)
     {
         _categoryService = categoryService;
         _configuration = configuration;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -33,12 +38,12 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public CategoryViewModel? Get(int id)
+    public IActionResult Get(int id)
     {
         Category? category = _categoryService.GetById(id);
         if (category == null)
         {
-            return null;
+            return NotFound();
         }
 
         CategoryViewModel categoryViewModel = new()
@@ -55,13 +60,19 @@ public class CategoryController : ControllerBase
             }).ToList(),
         };
 
-        return categoryViewModel;
+        return Ok(categoryViewModel);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public void Post([FromBody] CategoryRequest categoryRequest)
+    public IActionResult Post([FromBody] CategoryRequest categoryRequest)
     {
+        ValidationResult result = _validator.Validate(categoryRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+
         Category category = new()
         {
             Name = categoryRequest.Name,
@@ -69,12 +80,25 @@ public class CategoryController : ControllerBase
         };
 
         _categoryService.Create(category);
+
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public void Put(int id, [FromBody] CategoryRequest categoryRequest)
+    public IActionResult Put(int id, [FromBody] CategoryRequest categoryRequest)
     {
+        if (!_categoryService.Exists(id))
+        {
+            return NotFound();
+        }
+
+        ValidationResult result = _validator.Validate(categoryRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+
         Category category = new()
         {
             Id = id,
@@ -83,12 +107,21 @@ public class CategoryController : ControllerBase
         };
 
         _categoryService.Update(category);
+
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
-    public void Delete(int id)
+    public IActionResult Delete(int id)
     {
+        if (!_categoryService.Exists(id))
+        {
+            return NotFound();
+        }
+
         _categoryService.Delete(id);
+
+        return NoContent();
     }
 }

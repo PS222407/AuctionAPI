@@ -53,4 +53,9 @@ public class AuctionRepository : IAuctionRepository
         _dbContext.Auctions.Remove(auction);
         return _dbContext.SaveChanges() > 0;
     }
+
+    public bool Exists(int id)
+    {
+        return _dbContext.Auctions.Any(a => a.Id == id);
+    }
 }
