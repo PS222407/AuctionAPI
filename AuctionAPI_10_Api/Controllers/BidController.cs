@@ -4,6 +4,8 @@ using AuctionAPI_10_Api.Hub.Requests;
 using AuctionAPI_20_BusinessLogic.Exceptions;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -19,16 +21,25 @@ public class BidController : ControllerBase
 
     private readonly IHubContext<MainHub, IMainHubClient> _hubContext;
 
-    public BidController(IBidService bidService, IHubContext<MainHub, IMainHubClient> hubContext)
+    private IValidator<BidRequest> _validator;
+
+    public BidController(IBidService bidService, IHubContext<MainHub, IMainHubClient> hubContext, IValidator<BidRequest> validator)
     {
         _bidService = bidService;
         _hubContext = hubContext;
+        _validator = validator;
     }
 
     [Authorize]
     [HttpPost]
-    public IActionResult Post([FromBody] BidRequest bidRequest)
+    public async Task<IActionResult> Post([FromBody] BidRequest bidRequest)
     {
+        ValidationResult result = await _validator.ValidateAsync(bidRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+        
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
         TimeZoneInfo amsterdamZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
@@ -46,11 +57,15 @@ public class BidController : ControllerBase
         }
         catch (AuctionNotAvailableException e)
         {
-            return NotFound(e.Message);
+            return NotFound(new {
+                Message = e.Message
+            });
         }
         catch (BidTooLowException e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new {
+                Message = e.Message,
+            });
         }
 
         Hub.Requests.BidRequest br = new()
@@ -64,8 +79,8 @@ public class BidController : ControllerBase
             PriceInCents = bidRequest.PriceInCents,
             CreatedAt = now,
         };
-        _hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
+        await _hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
 
-        return Ok();
+        return NoContent();
     }
 }

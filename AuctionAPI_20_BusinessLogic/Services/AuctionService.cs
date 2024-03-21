@@ -51,4 +51,9 @@ public class AuctionService : IAuctionService
 
         return now > auction.StartDateTime && now < endDateTime;
     }
+
+    public bool Exists(int id)
+    {
+        return _auctionRepository.Exists(id);
+    }
 }

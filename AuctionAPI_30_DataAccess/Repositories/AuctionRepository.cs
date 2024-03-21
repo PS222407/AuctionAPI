@@ -31,7 +31,7 @@ public class AuctionRepository : IAuctionRepository
     {
         return _dbContext.Auctions
             .Include(a => a.Product)
-            .Include(a => a.Bids.OrderByDescending(b => b.CreatedAt))
+            .Include(a => a.Bids.OrderByDescending(b => b.PriceInCents))
             .ThenInclude(b => b.User)
             .FirstOrDefault(a => a.Id == id);
     }
@@ -52,5 +52,10 @@ public class AuctionRepository : IAuctionRepository
 
         _dbContext.Auctions.Remove(auction);
         return _dbContext.SaveChanges() > 0;
+    }
+
+    public bool Exists(int id)
+    {
+        return _dbContext.Auctions.Any(a => a.Id == id);
     }
 }

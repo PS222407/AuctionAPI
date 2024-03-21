@@ -13,4 +13,6 @@ public interface IAuctionRepository
     public bool Update(Auction auction);
 
     public bool Delete(long id);
+
+    public bool Exists(int id);
 }

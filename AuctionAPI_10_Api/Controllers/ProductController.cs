@@ -3,6 +3,8 @@ using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.ProjectModel;
@@ -13,6 +15,8 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
+    public IValidator<ProductCreateRequest> UpdateValidator { get; }
+
     private readonly ICategoryService _categoryService;
 
     private readonly IConfiguration _configuration;
@@ -23,19 +27,26 @@ public class ProductController : ControllerBase
 
     private readonly IWebHostEnvironment _webHostEnvironment;
 
+    private readonly IValidator<ProductCreateRequest> _createValidator;
+    
+    private readonly IValidator<ProductUpdateRequest> _updateValidator;
+
     public ProductController(
         FileService fileService,
         IProductService productService,
         IWebHostEnvironment webHostEnvironment,
         IConfiguration configuration,
-        ICategoryService categoryService
-    )
+        ICategoryService categoryService, 
+        IValidator<ProductCreateRequest> validator, IValidator<ProductCreateRequest> createValidator, IValidator<ProductCreateRequest> updateValidator, IValidator<ProductUpdateRequest> updateValidator1)
     {
+        UpdateValidator = updateValidator;
+        _updateValidator = updateValidator1;
         _productService = productService;
         _fileService = fileService;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
         _categoryService = categoryService;
+        _createValidator = createValidator;
     }
 
     [HttpGet]
@@ -51,12 +62,12 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public ProductViewModel? Get(long id)
+    public IActionResult Get(long id)
     {
         Product? product = _productService.GetById(id);
         if (product == null)
         {
-            return null;
+            return NotFound();
         }
 
         ProductViewModel productViewModel = new()
@@ -80,23 +91,29 @@ public class ProductController : ControllerBase
             }).ToList(),
         };
 
-        return productViewModel;
+        return Ok(productViewModel);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Post([FromForm] ProductRequest productRequest)
+    public async Task<IActionResult> Post([FromForm] ProductCreateRequest productCreateRequest)
     {
-        if (!_categoryService.Exists(productRequest.CategoryId))
+        ValidationResult result = await _createValidator.ValidateAsync(productCreateRequest);
+        if (!result.IsValid)
         {
-            return NotFound(new { Message = "Category not found" });
+            return BadRequest(result.Errors);
+        }
+
+        if (!_categoryService.Exists(productCreateRequest.CategoryId ?? 0))
+        {
+            return BadRequest(new { Message = "Category not found" });
         }
 
         string imageUrl;
         try
         {
-            imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
+            imageUrl = await _fileService.SaveImageAsync(productCreateRequest.Image, _webHostEnvironment) ?? "";
         }
         catch (FileFormatException)
         {
@@ -105,10 +122,10 @@ public class ProductController : ControllerBase
 
         Product product = new()
         {
-            Name = productRequest.Name,
-            Description = productRequest.Description,
+            Name = productCreateRequest.Name,
+            Description = productCreateRequest.Description,
             ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId,
+            CategoryId = productCreateRequest.CategoryId ?? 0,
         };
 
         _productService.Create(product);
@@ -119,31 +136,42 @@ public class ProductController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Put(int id, [FromForm] ProductRequest productRequest)
+    public async Task<IActionResult> Put(int id, [FromForm] ProductUpdateRequest productUpdateRequest)
     {
-        if (!_categoryService.Exists(productRequest.CategoryId))
+        Product? product = _productService.GetById(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+        ValidationResult result = await _updateValidator.ValidateAsync(productUpdateRequest);
+        if (!result.IsValid)
+        {
+            return BadRequest(result.Errors);
+        }
+        
+        if (!_categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
         {
             return NotFound(new { Message = "Category not found" });
         }
 
-        string imageUrl;
+        string imageUrl = product.ImageUrl;
         try
         {
-            imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
+            if (productUpdateRequest.Image != null)
+            {
+                imageUrl = await _fileService.SaveImageAsync(productUpdateRequest.Image, _webHostEnvironment) ?? "";
+            }
         }
         catch (FileFormatException)
         {
             return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } } });
         }
 
-        Product product = new()
-        {
-            Id = id,
-            Name = productRequest.Name,
-            Description = productRequest.Description,
-            ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId,
-        };
+        product.Name = productUpdateRequest.Name;
+        product.Description = productUpdateRequest.Description;
+        product.ImageUrl = imageUrl;
+        product.CategoryId = productUpdateRequest.CategoryId ?? 0;
+        product.ImageIsExternal = productUpdateRequest.Image == null ? product.ImageIsExternal : false;
 
         _productService.Update(product);
 
@@ -152,8 +180,15 @@ public class ProductController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
-    public void Delete(int id)
+    public IActionResult Delete(int id)
     {
+        if (!_productService.Exists(id))
+        {
+            return NotFound();
+        }
+        
         _productService.Delete(id);
+        
+        return NoContent();
     }
 }
