@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using AuctionAPI_10_Api.ViewModels;
+using AuctionAPI_20_BusinessLogic.DataModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
 using AuctionAPI_30_DataAccess.Data;
@@ -17,10 +18,13 @@ public class UserController : ControllerBase
 
     private DataContext _context;
 
-    public UserController(IUserService userService, DataContext context)
+    private readonly IConfiguration _configuration;
+
+    public UserController(IUserService userService, DataContext context, IConfiguration configuration)
     {
         _userService = userService;
         _context = context;
+        _configuration = configuration;
     }
 
     [HttpGet("{email}")]
@@ -48,40 +52,37 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("Auctions/Won")]
-    public IActionResult GetAuctions()
+    [Authorize]
+    public IActionResult GetWonAuctions()
     {
-        // string? id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        // if (id == null)
-        // {
-        //     return null;
-        // }
+        // string adminId = "0206A018-5AC6-492D-AB99-10105193D384";
+        // string employeeId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652";
 
-        string userId = "c51aee86-3644-4c23-9d7b-113429192561";
-        string adminId = "0206A018-5AC6-492D-AB99-10105193D384";
+        string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
-        // SELECT b.UserId, b.AuctionId, b.PriceInCents, a.DurationInSeconds
-        // FROM Bids b
-        // JOIN Auctions a
-        // ON a.Id = b.AuctionId
-        // JOIN Products p
-        // ON p.Id = a.ProductId
-        // JOIN (
-        //     SELECT AuctionId, MAX(PriceInCents) AS MaxPrice
-        //     FROM Bids
-        //     GROUP BY AuctionId
-        // ) max_bids ON b.AuctionId = max_bids.AuctionId AND b.PriceInCents = max_bids.MaxPrice;
-        
-        var result = (
-            from b in _context.Bids
-            join maxBid in
-                from bid in _context.Bids
-                group bid by bid.AuctionId
-                into g
-                select new { AuctionId = g.Key, MaxPrice = g.Max(b => b.PriceInCents) }
-                on new { b.AuctionId, b.PriceInCents } equals new { maxBid.AuctionId, PriceInCents = maxBid.MaxPrice }
-            select new { b.UserId, b.AuctionId, b.PriceInCents }).ToList();
+        List<AuctionViewModel> auctionViewModels = _userService.GetWonAuctions(userId)
+            .Select(x => new AuctionViewModel
+            {
+                Id = x.Id,
+                StartDateTime = x.StartDateTime,
+                DurationInSeconds = x.DurationInSeconds,
+                Product = new ProductViewModel
+                {
+                    Id = x.Product.Id,
+                    Name = x.Product.Name,
+                    Description = x.Product.Description,
+                    ImageUrl = x.Product.ImageIsExternal
+                        ? x.Product.ImageUrl
+                        : $"{_configuration["BackendUrl"]}{x.Product.ImageUrl}",
+                },
+                Bids = x.Bids.Select(b => new BidViewModel
+                {
+                    Id = b.Id,
+                    PriceInCents = b.PriceInCents,
+                    CreatedAt = b.CreatedAt,
+                }).ToList(),
+            }).ToList();
 
-        return Ok(result);
-        // return _userService.GetWonAuctions(userId);
+        return Ok(auctionViewModels);
     }
 }
