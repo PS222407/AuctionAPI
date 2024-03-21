@@ -15,6 +15,8 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
+    public IValidator<ProductCreateRequest> UpdateValidator { get; }
+
     private readonly ICategoryService _categoryService;
 
     private readonly IConfiguration _configuration;
@@ -25,7 +27,9 @@ public class ProductController : ControllerBase
 
     private readonly IWebHostEnvironment _webHostEnvironment;
 
-    private readonly IValidator<ProductRequest> _validator;
+    private readonly IValidator<ProductCreateRequest> _createValidator;
+    
+    private readonly IValidator<ProductUpdateRequest> _updateValidator;
 
     public ProductController(
         FileService fileService,
@@ -33,14 +37,16 @@ public class ProductController : ControllerBase
         IWebHostEnvironment webHostEnvironment,
         IConfiguration configuration,
         ICategoryService categoryService, 
-        IValidator<ProductRequest> validator)
+        IValidator<ProductCreateRequest> validator, IValidator<ProductCreateRequest> createValidator, IValidator<ProductCreateRequest> updateValidator, IValidator<ProductUpdateRequest> updateValidator1)
     {
+        UpdateValidator = updateValidator;
+        _updateValidator = updateValidator1;
         _productService = productService;
         _fileService = fileService;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
         _categoryService = categoryService;
-        _validator = validator;
+        _createValidator = createValidator;
     }
 
     [HttpGet]
@@ -91,15 +97,15 @@ public class ProductController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Post([FromForm] ProductRequest productRequest)
+    public async Task<IActionResult> Post([FromForm] ProductCreateRequest productCreateRequest)
     {
-        ValidationResult result = await _validator.ValidateAsync(productRequest);
+        ValidationResult result = await _createValidator.ValidateAsync(productCreateRequest);
         if (!result.IsValid)
         {
             return BadRequest(result.Errors);
         }
 
-        if (!_categoryService.Exists(productRequest.CategoryId ?? 0))
+        if (!_categoryService.Exists(productCreateRequest.CategoryId ?? 0))
         {
             return BadRequest(new { Message = "Category not found" });
         }
@@ -107,7 +113,7 @@ public class ProductController : ControllerBase
         string imageUrl;
         try
         {
-            imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
+            imageUrl = await _fileService.SaveImageAsync(productCreateRequest.Image, _webHostEnvironment) ?? "";
         }
         catch (FileFormatException)
         {
@@ -116,10 +122,10 @@ public class ProductController : ControllerBase
 
         Product product = new()
         {
-            Name = productRequest.Name,
-            Description = productRequest.Description,
+            Name = productCreateRequest.Name,
+            Description = productCreateRequest.Description,
             ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId ?? 0,
+            CategoryId = productCreateRequest.CategoryId ?? 0,
         };
 
         _productService.Create(product);
@@ -130,41 +136,42 @@ public class ProductController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Put(int id, [FromForm] ProductRequest productRequest)
+    public async Task<IActionResult> Put(int id, [FromForm] ProductUpdateRequest productUpdateRequest)
     {
-        if (!_categoryService.Exists(id))
+        Product? product = _productService.GetById(id);
+        if (product == null)
         {
             return NotFound();
         }
-        ValidationResult result = await _validator.ValidateAsync(productRequest);
+        ValidationResult result = await _updateValidator.ValidateAsync(productUpdateRequest);
         if (!result.IsValid)
         {
             return BadRequest(result.Errors);
         }
         
-        if (!_categoryService.Exists(productRequest.CategoryId ?? 0))
+        if (!_categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
         {
             return NotFound(new { Message = "Category not found" });
         }
 
-        string imageUrl;
+        string imageUrl = product.ImageUrl;
         try
         {
-            imageUrl = await _fileService.SaveImageAsync(productRequest.Image, _webHostEnvironment) ?? "";
+            if (productUpdateRequest.Image != null)
+            {
+                imageUrl = await _fileService.SaveImageAsync(productUpdateRequest.Image, _webHostEnvironment) ?? "";
+            }
         }
         catch (FileFormatException)
         {
             return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } } });
         }
 
-        Product product = new()
-        {
-            Id = id,
-            Name = productRequest.Name,
-            Description = productRequest.Description,
-            ImageUrl = imageUrl,
-            CategoryId = productRequest.CategoryId ?? 0,
-        };
+        product.Name = productUpdateRequest.Name;
+        product.Description = productUpdateRequest.Description;
+        product.ImageUrl = imageUrl;
+        product.CategoryId = productUpdateRequest.CategoryId ?? 0;
+        product.ImageIsExternal = productUpdateRequest.Image == null ? product.ImageIsExternal : false;
 
         _productService.Update(product);
 

@@ -9,6 +9,6 @@ public class AuctionRequestValidator : AbstractValidator<AuctionRequest>
     {
         RuleFor(x => x.ProductId).GreaterThan(0).LessThan(long.MaxValue);
         RuleFor(x => x.DurationInSeconds).GreaterThan(0).LessThan(int.MaxValue);
-        RuleFor(x => x.StartDateTime).NotNull().GreaterThan(DateTime.Parse("01/01/0001 00:00:01"));
+        RuleFor(x => x.StartDateTime).NotNull().NotEmpty();
     }
 }
