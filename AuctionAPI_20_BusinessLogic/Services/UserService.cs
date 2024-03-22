@@ -40,15 +40,15 @@ public class UserService : IUserService
             },
             Bids =
             [
-                new Bid()
+                new Bid
                 {
                     Id = x.b__Id,
                     AuctionId = x.b__AuctionId,
                     PriceInCents = x.b__PriceInCents,
                     CreatedAt = x.b__CreatedAt,
-                    UserId = x.b__UserId
+                    UserId = x.b__UserId,
                 },
-            ]
+            ],
         }).ToList();
     }
 }

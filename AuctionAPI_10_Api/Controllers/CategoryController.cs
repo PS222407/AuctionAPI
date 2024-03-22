@@ -19,7 +19,10 @@ public class CategoryController : ControllerBase
 
     private readonly IValidator<CategoryRequest> _validator;
 
-    public CategoryController(ICategoryService categoryService, IConfiguration configuration, IValidator<CategoryRequest> validator)
+    public CategoryController(
+        ICategoryService categoryService, 
+        IConfiguration configuration,
+        IValidator<CategoryRequest> validator)
     {
         _categoryService = categoryService;
         _configuration = configuration;
@@ -27,14 +30,14 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<CategoryViewModel> Get()
+    public IActionResult Get()
     {
-        return _categoryService.Get().Select(c => new CategoryViewModel
+        return Ok(_categoryService.Get().Select(c => new CategoryViewModel
         {
             Id = c.Id,
             Name = c.Name,
             Icon = c.Icon,
-        });
+        }));
     }
 
     [HttpGet("{id:int}")]

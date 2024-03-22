@@ -7,7 +7,6 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.ProjectModel;
 
 namespace AuctionAPI_10_Api.Controllers;
 
@@ -15,34 +14,27 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
-    public IValidator<ProductCreateRequest> UpdateValidator { get; }
-
     private readonly ICategoryService _categoryService;
 
     private readonly IConfiguration _configuration;
 
-    private readonly FileService _fileService;
+    private readonly IValidator<ProductCreateRequest> _createValidator;
 
     private readonly IProductService _productService;
 
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    private readonly IValidator<ProductCreateRequest> _createValidator;
-    
     private readonly IValidator<ProductUpdateRequest> _updateValidator;
 
-    public ProductController(
-        FileService fileService,
-        IProductService productService,
+    private readonly IWebHostEnvironment _webHostEnvironment;
+
+    public ProductController(IProductService productService,
         IWebHostEnvironment webHostEnvironment,
         IConfiguration configuration,
-        ICategoryService categoryService, 
-        IValidator<ProductCreateRequest> validator, IValidator<ProductCreateRequest> createValidator, IValidator<ProductCreateRequest> updateValidator, IValidator<ProductUpdateRequest> updateValidator1)
+        ICategoryService categoryService,
+        IValidator<ProductCreateRequest> createValidator,
+        IValidator<ProductUpdateRequest> updateValidator)
     {
-        UpdateValidator = updateValidator;
-        _updateValidator = updateValidator1;
+        _updateValidator = updateValidator;
         _productService = productService;
-        _fileService = fileService;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
         _categoryService = categoryService;
@@ -110,27 +102,17 @@ public class ProductController : ControllerBase
             return BadRequest(new { Message = "Category not found" });
         }
 
-        string imageUrl;
-        try
-        {
-            imageUrl = await _fileService.SaveImageAsync(productCreateRequest.Image, _webHostEnvironment) ?? "";
-        }
-        catch (FileFormatException)
-        {
-            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } } });
-        }
-
         Product product = new()
         {
             Name = productCreateRequest.Name,
             Description = productCreateRequest.Description,
-            ImageUrl = imageUrl,
+            ImageUrl = await FileService.SaveImageAsync(productCreateRequest.Image, _webHostEnvironment) ?? "",
             CategoryId = productCreateRequest.CategoryId ?? 0,
         };
 
         _productService.Create(product);
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
@@ -143,28 +125,22 @@ public class ProductController : ControllerBase
         {
             return NotFound();
         }
+
         ValidationResult result = await _updateValidator.ValidateAsync(productUpdateRequest);
         if (!result.IsValid)
         {
             return BadRequest(result.Errors);
         }
-        
+
         if (!_categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
         {
             return NotFound(new { Message = "Category not found" });
         }
 
         string imageUrl = product.ImageUrl;
-        try
+        if (productUpdateRequest.Image != null)
         {
-            if (productUpdateRequest.Image != null)
-            {
-                imageUrl = await _fileService.SaveImageAsync(productUpdateRequest.Image, _webHostEnvironment) ?? "";
-            }
-        }
-        catch (FileFormatException)
-        {
-            return BadRequest(new { Errors = new { Image = new List<string> { "File is not an image" } } });
+            imageUrl = await FileService.SaveImageAsync(productUpdateRequest.Image, _webHostEnvironment) ?? "";
         }
 
         product.Name = productUpdateRequest.Name;
@@ -175,7 +151,7 @@ public class ProductController : ControllerBase
 
         _productService.Update(product);
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
@@ -186,9 +162,9 @@ public class ProductController : ControllerBase
         {
             return NotFound();
         }
-        
+
         _productService.Delete(id);
-        
+
         return NoContent();
     }
 }

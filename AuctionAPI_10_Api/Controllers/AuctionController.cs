@@ -31,9 +31,9 @@ public class AuctionController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<AuctionViewModel> Get()
+    public IActionResult Get()
     {
-        return _auctionService.Get().Select(a => new AuctionViewModel
+        return Ok(_auctionService.Get().Select(a => new AuctionViewModel
         {
             Id = a.Id,
             Product = new ProductViewModel
@@ -47,11 +47,11 @@ public class AuctionController : ControllerBase
             },
             DurationInSeconds = a.DurationInSeconds,
             StartDateTime = a.StartDateTime,
-        });
+        }));
     }
 
     [HttpGet("{id:int}")]
-    public IActionResult Get(int id)
+    public IActionResult Get([FromRoute] int id)
     {
         Auction? auction = _auctionService.GetById(id);
         if (auction == null)
@@ -114,12 +114,12 @@ public class AuctionController : ControllerBase
 
         _auctionService.Create(auction);
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public IActionResult Put(int id, [FromBody] AuctionRequest auctionRequest)
+    public IActionResult Put([FromRoute] int id, [FromBody] AuctionRequest auctionRequest)
     {
         if (!_auctionService.Exists(id))
         {
@@ -147,7 +147,7 @@ public class AuctionController : ControllerBase
 
         _auctionService.Update(auction);
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]

@@ -1,4 +1,5 @@
 using AuctionAPI_10_Api.Hub;
+using AuctionAPI_10_Api.Middleware;
 using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.Validators;
@@ -100,6 +101,8 @@ app.UseSwaggerUI();
 app.MapGroup("/api").MapIdentityApi<IdentityUser>();
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

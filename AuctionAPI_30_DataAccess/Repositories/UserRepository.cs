@@ -8,9 +8,9 @@ namespace AuctionAPI_30_DataAccess.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly UserManager<IdentityUser> _userManager;
-
     private readonly DataContext _context;
+
+    private readonly UserManager<IdentityUser> _userManager;
 
     public UserRepository(UserManager<IdentityUser> userManager, DataContext context)
     {
