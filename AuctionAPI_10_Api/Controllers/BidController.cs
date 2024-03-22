@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using AuctionAPI_10_Api.Hub;
 using AuctionAPI_10_Api.Hub.Requests;
-using AuctionAPI_20_BusinessLogic.Exceptions;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
 using FluentValidation;
@@ -21,9 +20,12 @@ public class BidController : ControllerBase
 
     private readonly IHubContext<MainHub, IMainHubClient> _hubContext;
 
-    private IValidator<BidRequest> _validator;
+    private readonly IValidator<BidRequest> _validator;
 
-    public BidController(IBidService bidService, IHubContext<MainHub, IMainHubClient> hubContext, IValidator<BidRequest> validator)
+    public BidController(
+        IBidService bidService,
+        IHubContext<MainHub, IMainHubClient> hubContext,
+        IValidator<BidRequest> validator)
     {
         _bidService = bidService;
         _hubContext = hubContext;
@@ -39,34 +41,18 @@ public class BidController : ControllerBase
         {
             return BadRequest(result.Errors);
         }
-        
+
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+            TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"));
 
-        TimeZoneInfo amsterdamZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
-        DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, amsterdamZone);
-
-        try
+        _bidService.Create(new Bid
         {
-            _bidService.Create(new Bid
-            {
-                AuctionId = bidRequest.AuctionId,
-                PriceInCents = bidRequest.PriceInCents,
-                CreatedAt = now,
-                UserId = userId,
-            });
-        }
-        catch (AuctionNotAvailableException e)
-        {
-            return NotFound(new {
-                Message = e.Message
-            });
-        }
-        catch (BidTooLowException e)
-        {
-            return BadRequest(new {
-                Message = e.Message,
-            });
-        }
+            AuctionId = bidRequest.AuctionId,
+            PriceInCents = bidRequest.PriceInCents,
+            CreatedAt = now,
+            UserId = userId,
+        });
 
         Hub.Requests.BidRequest br = new()
         {
