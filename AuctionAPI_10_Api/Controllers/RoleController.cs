@@ -21,12 +21,12 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<RoleViewModel> Get()
+    public IActionResult Get()
     {
-        return _roleService.Get().Select(x => new RoleViewModel
+        return Ok(_roleService.Get().Select(x => new RoleViewModel
         {
             Name = x.Name,
-        });
+        }));
     }
 
     [HttpPost("attachRoleToUser")]
@@ -40,16 +40,18 @@ public class RoleController : ControllerBase
 
         await _signInManager.RefreshSignInAsync(user);
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpPost("revokeRoleFromUser")]
-    public async Task RevokeRoleFromUser(UserRoleRequest userRoleRequest)
+    public async Task<IActionResult> RevokeRoleFromUser(UserRoleRequest userRoleRequest)
     {
         IdentityUser? user = await _roleService.RevokeRoleFromUser(userRoleRequest.RoleName, userRoleRequest.UserId);
         if (user != null)
         {
             await _signInManager.RefreshSignInAsync(user);
         }
+
+        return NoContent();
     }
 }

@@ -19,6 +19,6 @@ public class SeederController : ControllerBase
     {
         await new SeedData(_dbContext).ResetDatabaseAndSeed();
 
-        return Ok();
+        return NoContent();
     }
 }

@@ -21,14 +21,14 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{email}")]
-    public IEnumerable<UserViewModel> Get(string email)
+    public IActionResult Get(string email)
     {
-        return _userService.SearchByEmail(email).Select(x => new UserViewModel
+        return Ok(_userService.SearchByEmail(email).Select(x => new UserViewModel
         {
             Id = x.Id,
             Name = x.UserName,
             Email = x.Email,
-        });
+        }));
     }
 
     [HttpGet("Info")]
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
 
         string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
-        List<AuctionViewModel> auctionViewModels = _userService.GetWonAuctions(userId)
+        return Ok(_userService.GetWonAuctions(userId)
             .Select(x => new AuctionViewModel
             {
                 Id = x.Id,
@@ -68,8 +68,7 @@ public class UserController : ControllerBase
                     PriceInCents = b.PriceInCents,
                     CreatedAt = b.CreatedAt,
                 }).ToList(),
-            }).ToList();
-
-        return Ok(auctionViewModels);
+            }).ToList()
+        );
     }
 }

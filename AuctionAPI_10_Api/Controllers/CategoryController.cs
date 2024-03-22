@@ -27,14 +27,14 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<CategoryViewModel> Get()
+    public IActionResult Get()
     {
-        return _categoryService.Get().Select(c => new CategoryViewModel
+        return Ok(_categoryService.Get().Select(c => new CategoryViewModel
         {
             Id = c.Id,
             Name = c.Name,
             Icon = c.Icon,
-        });
+        }));
     }
 
     [HttpGet("{id:int}")]
