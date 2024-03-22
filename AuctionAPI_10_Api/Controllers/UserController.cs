@@ -10,9 +10,9 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly IUserService _userService;
-
     private readonly IConfiguration _configuration;
+
+    private readonly IUserService _userService;
 
     public UserController(IUserService userService, IConfiguration configuration)
     {

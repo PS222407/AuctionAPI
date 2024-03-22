@@ -18,18 +18,18 @@ public class ProductController : ControllerBase
 
     private readonly IConfiguration _configuration;
 
+    private readonly IValidator<ProductCreateRequest> _createValidator;
+
     private readonly IProductService _productService;
 
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    private readonly IValidator<ProductCreateRequest> _createValidator;
-    
     private readonly IValidator<ProductUpdateRequest> _updateValidator;
+
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public ProductController(IProductService productService,
         IWebHostEnvironment webHostEnvironment,
         IConfiguration configuration,
-        ICategoryService categoryService, 
+        ICategoryService categoryService,
         IValidator<ProductCreateRequest> createValidator,
         IValidator<ProductUpdateRequest> updateValidator)
     {
@@ -125,12 +125,13 @@ public class ProductController : ControllerBase
         {
             return NotFound();
         }
+
         ValidationResult result = await _updateValidator.ValidateAsync(productUpdateRequest);
         if (!result.IsValid)
         {
             return BadRequest(result.Errors);
         }
-        
+
         if (!_categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
         {
             return NotFound(new { Message = "Category not found" });
@@ -161,9 +162,9 @@ public class ProductController : ControllerBase
         {
             return NotFound();
         }
-        
+
         _productService.Delete(id);
-        
+
         return NoContent();
     }
 }

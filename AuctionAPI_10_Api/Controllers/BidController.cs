@@ -20,9 +20,12 @@ public class BidController : ControllerBase
 
     private readonly IHubContext<MainHub, IMainHubClient> _hubContext;
 
-    private IValidator<BidRequest> _validator;
+    private readonly IValidator<BidRequest> _validator;
 
-    public BidController(IBidService bidService, IHubContext<MainHub, IMainHubClient> hubContext, IValidator<BidRequest> validator)
+    public BidController(
+        IBidService bidService,
+        IHubContext<MainHub, IMainHubClient> hubContext,
+        IValidator<BidRequest> validator)
     {
         _bidService = bidService;
         _hubContext = hubContext;
@@ -40,8 +43,9 @@ public class BidController : ControllerBase
         }
 
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"));
-        
+        DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+            TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"));
+
         _bidService.Create(new Bid
         {
             AuctionId = bidRequest.AuctionId,
