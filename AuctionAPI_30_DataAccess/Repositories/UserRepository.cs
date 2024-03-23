@@ -5,18 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuctionAPI_30_DataAccess.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(DataContext context) : IUserRepository
 {
-    private readonly DataContext _context;
-
-    public UserRepository(DataContext context)
-    {
-        _context = context;
-    }
-
     public List<WonAuctionsDataModel> GetWonAuctions(string userId)
     {
-        return _context.Database.SqlQuery<WonAuctionsDataModel>($@"
+        return context.Database.SqlQuery<WonAuctionsDataModel>($@"
             SELECT b.Id b__Id, b.AuctionId b__AuctionId, b.PriceInCents b__PriceInCents, b.CreatedAt b__CreatedAt, b.UserId b__UserId, a.Id a__id, a.ProductId a__ProductId, a.StartDateTime a__StartDateTime, a.DurationInSeconds a__DurationInSeconds, p.Id p__Id, p.Name p__Name, p.Description p__Description, p.ImageUrl p__ImageUrl, p.CategoryId p__CategoryId, p.ImageIsExternal p__ImageIsExternal
             FROM Bids b
             JOIN Auctions a

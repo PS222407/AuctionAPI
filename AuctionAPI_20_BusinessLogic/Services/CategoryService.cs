@@ -3,42 +3,35 @@ using AuctionAPI_20_BusinessLogic.Models;
 
 namespace AuctionAPI_20_BusinessLogic.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryService(ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
-
     public List<Category> Get()
     {
-        return _categoryRepository.Get();
+        return categoryRepository.Get();
     }
 
     public bool Create(Category category)
     {
-        return _categoryRepository.Create(category);
+        return categoryRepository.Create(category);
     }
 
     public Category? GetById(long id)
     {
-        return _categoryRepository.GetById(id);
+        return categoryRepository.GetById(id);
     }
 
     public bool Update(Category category)
     {
-        return _categoryRepository.Update(category);
+        return categoryRepository.Update(category);
     }
 
     public bool Delete(long id)
     {
-        return _categoryRepository.Delete(id);
+        return categoryRepository.Delete(id);
     }
 
     public bool Exists(long id)
     {
-        return _categoryRepository.Exists(id);
+        return categoryRepository.Exists(id);
     }
 }

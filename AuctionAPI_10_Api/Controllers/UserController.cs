@@ -8,25 +8,15 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController(IUserService userService, IConfiguration configuration) : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-
-    private readonly IUserService _userService;
-
-    public UserController(IUserService userService, IConfiguration configuration)
-    {
-        _userService = userService;
-        _configuration = configuration;
-    }
-
     [HttpGet("Auctions/Won")]
     [Authorize]
     public IActionResult GetWonAuctions()
     {
         string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
-        return Ok(_userService.GetWonAuctions(userId)
+        return Ok(userService.GetWonAuctions(userId)
             .Select(x => new AuctionViewModel
             {
                 Id = x.Id,
@@ -39,7 +29,7 @@ public class UserController : ControllerBase
                     Description = x.Product.Description,
                     ImageUrl = x.Product.ImageIsExternal
                         ? x.Product.ImageUrl
-                        : $"{_configuration["BackendUrl"]}{x.Product.ImageUrl}",
+                        : $"{configuration["BackendUrl"]}{x.Product.ImageUrl}",
                 },
                 Bids = x.Bids.Select(b => new BidViewModel
                 {

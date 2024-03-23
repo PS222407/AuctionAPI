@@ -3,12 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuctionAPI_30_DataAccess.Data;
 
-public class DataContext : DbContext
+public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
-    {
-    }
-
     public DbSet<Product> Products { get; set; }
 
     public DbSet<Category> Categories { get; set; }

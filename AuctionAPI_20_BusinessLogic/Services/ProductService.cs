@@ -3,42 +3,35 @@ using AuctionAPI_20_BusinessLogic.Models;
 
 namespace AuctionAPI_20_BusinessLogic.Services;
 
-public class ProductService : IProductService
+public class ProductService(IProductRepository productRepository) : IProductService
 {
-    private readonly IProductRepository _productRepository;
-
-    public ProductService(IProductRepository productRepository)
-    {
-        _productRepository = productRepository;
-    }
-
     public List<Product> Get()
     {
-        return _productRepository.Get();
+        return productRepository.Get();
     }
 
     public bool Create(Product product)
     {
-        return _productRepository.Create(product);
+        return productRepository.Create(product);
     }
 
     public Product? GetById(long id)
     {
-        return _productRepository.GetById(id);
+        return productRepository.GetById(id);
     }
 
     public bool Update(Product product)
     {
-        return _productRepository.Update(product);
+        return productRepository.Update(product);
     }
 
     public bool Delete(long id)
     {
-        return _productRepository.Delete(id);
+        return productRepository.Delete(id);
     }
 
     public bool Exists(long id)
     {
-        return _productRepository.Exists(id);
+        return productRepository.Exists(id);
     }
 }

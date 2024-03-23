@@ -4,18 +4,11 @@ using AuctionAPI_20_BusinessLogic.Models;
 
 namespace AuctionAPI_20_BusinessLogic.Services;
 
-public class UserService : IUserService
+public class UserService(IUserRepository userRepository) : IUserService
 {
-    private readonly IUserRepository _userRepository;
-
-    public UserService(IUserRepository userRepository)
-    {
-        _userRepository = userRepository;
-    }
-
     public List<Auction> GetWonAuctions(string userId)
     {
-        List<WonAuctionsDataModel> wonAuctions = _userRepository.GetWonAuctions(userId);
+        List<WonAuctionsDataModel> wonAuctions = userRepository.GetWonAuctions(userId);
 
         return wonAuctions.Select(x => new Auction
         {

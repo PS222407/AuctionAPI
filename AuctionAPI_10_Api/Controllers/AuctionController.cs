@@ -11,32 +11,17 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class AuctionController : ControllerBase
+public class AuctionController(
+    IAuctionService auctionService,
+    IConfiguration configuration,
+    IProductService productService,
+    IValidator<AuctionRequest> validator)
+    : ControllerBase
 {
-    private readonly IAuctionService _auctionService;
-
-    private readonly IConfiguration _configuration;
-
-    private readonly IProductService _productService;
-
-    private readonly IValidator<AuctionRequest> _validator;
-
-    public AuctionController(
-        IAuctionService auctionService,
-        IConfiguration configuration,
-        IProductService productService,
-        IValidator<AuctionRequest> validator)
-    {
-        _auctionService = auctionService;
-        _configuration = configuration;
-        _productService = productService;
-        _validator = validator;
-    }
-
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_auctionService.Get().Select(a => new AuctionViewModel
+        return Ok(auctionService.Get().Select(a => new AuctionViewModel
         {
             Id = a.Id,
             Product = new ProductViewModel
@@ -46,7 +31,7 @@ public class AuctionController : ControllerBase
                 Description = a.Product.Description,
                 ImageUrl = a.Product.ImageIsExternal
                     ? a.Product.ImageUrl
-                    : $"{_configuration["BackendUrl"]}{a.Product.ImageUrl}",
+                    : $"{configuration["BackendUrl"]}{a.Product.ImageUrl}",
             },
             DurationInSeconds = a.DurationInSeconds,
             StartDateTime = a.StartDateTime,
@@ -56,7 +41,7 @@ public class AuctionController : ControllerBase
     [HttpGet("{id:int}")]
     public IActionResult Get([FromRoute] int id)
     {
-        Auction? auction = _auctionService.GetById(id);
+        Auction? auction = auctionService.GetById(id);
         if (auction == null)
         {
             return NotFound();
@@ -72,7 +57,7 @@ public class AuctionController : ControllerBase
                 Description = auction.Product.Description,
                 ImageUrl = auction.Product.ImageIsExternal
                     ? auction.Product.ImageUrl
-                    : $"{_configuration["BackendUrl"]}{auction.Product.ImageUrl}",
+                    : $"{configuration["BackendUrl"]}{auction.Product.ImageUrl}",
             },
             DurationInSeconds = auction.DurationInSeconds,
             StartDateTime = auction.StartDateTime,
@@ -96,13 +81,13 @@ public class AuctionController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromBody] AuctionRequest auctionRequest)
     {
-        ValidationResult result = _validator.Validate(auctionRequest);
+        ValidationResult result = validator.Validate(auctionRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
 
-        if (!_productService.Exists(auctionRequest.ProductId))
+        if (!productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
         }
@@ -114,7 +99,7 @@ public class AuctionController : ControllerBase
             StartDateTime = auctionRequest.StartDateTime,
         };
 
-        _auctionService.Create(auction);
+        auctionService.Create(auction);
 
         return NoContent();
     }
@@ -123,18 +108,18 @@ public class AuctionController : ControllerBase
     [HttpPut("{id:int}")]
     public IActionResult Put([FromRoute] int id, [FromBody] AuctionRequest auctionRequest)
     {
-        if (!_auctionService.Exists(id))
+        if (!auctionService.Exists(id))
         {
             return NotFound();
         }
 
-        ValidationResult result = _validator.Validate(auctionRequest);
+        ValidationResult result = validator.Validate(auctionRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
 
-        if (!_productService.Exists(auctionRequest.ProductId))
+        if (!productService.Exists(auctionRequest.ProductId))
         {
             return BadRequest("Product not found");
         }
@@ -147,7 +132,7 @@ public class AuctionController : ControllerBase
             StartDateTime = auctionRequest.StartDateTime,
         };
 
-        _auctionService.Update(auction);
+        auctionService.Update(auction);
 
         return NoContent();
     }
@@ -156,12 +141,12 @@ public class AuctionController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult Delete(int id)
     {
-        if (!_auctionService.Exists(id))
+        if (!auctionService.Exists(id))
         {
             return NotFound();
         }
 
-        _auctionService.Delete(id);
+        auctionService.Delete(id);
 
         return NoContent();
     }

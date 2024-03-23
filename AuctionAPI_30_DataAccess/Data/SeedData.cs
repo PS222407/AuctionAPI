@@ -4,31 +4,24 @@ using MySqlConnector;
 
 namespace AuctionAPI_30_DataAccess.Data;
 
-public class SeedData
+public class SeedData(DataContext dbContext)
 {
-    private readonly DataContext _dbContext;
-
-    public SeedData(DataContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task ResetDatabaseAndSeed()
     {
-        await _dbContext.Database.EnsureDeletedAsync();
-        await _dbContext.Database.MigrateAsync();
-        _dbContext.ChangeTracker.Clear();
+        await dbContext.Database.EnsureDeletedAsync();
+        await dbContext.Database.MigrateAsync();
+        dbContext.ChangeTracker.Clear();
 
         try
         {
             SeedUsersAndRoles();
             SeedCategories();
             SeedProducts();
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             SeedAuctions();
             SeedBids();
 
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
         catch (MySqlException ex)
         {
@@ -38,7 +31,7 @@ public class SeedData
 
     private void SeedUsersAndRoles()
     {
-        _dbContext.Users.AddRange(
+        dbContext.Users.AddRange(
             new User
             {
                 Id = "0206A018-5AC6-492D-AB99-10105193D384",
@@ -53,7 +46,7 @@ public class SeedData
             }
         );
 
-        _dbContext.Roles.AddRange(
+        dbContext.Roles.AddRange(
             new Role
             {
                 Id = "8977148E-C765-410F-9A58-0C7D054E4536", Name = "Admin",
@@ -64,17 +57,17 @@ public class SeedData
             }
         );
 
-        _dbContext.SaveChanges();
+        dbContext.SaveChanges();
 
-        List<User> users = _dbContext.Users.ToList();
-        List<Role> roles = _dbContext.Roles.ToList();
+        List<User> users = dbContext.Users.ToList();
+        List<Role> roles = dbContext.Roles.ToList();
         users.Find(u => u.Email == "admin@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Admin"));
         users.Find(u => u.Email == "employee@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Employee"));
     }
 
     private void SeedCategories()
     {
-        _dbContext.Categories.AddRange(
+        dbContext.Categories.AddRange(
             new Category
             {
                 Id = 1,
@@ -101,7 +94,7 @@ public class SeedData
 
     private void SeedProducts()
     {
-        _dbContext.Products.AddRange(
+        dbContext.Products.AddRange(
             new Product
             {
                 Name = "Cutlery Set",
@@ -168,7 +161,7 @@ public class SeedData
 
     private void SeedAuctions()
     {
-        _dbContext.Auctions.AddRange(
+        dbContext.Auctions.AddRange(
             new Auction
             {
                 Id = 1,
@@ -195,7 +188,7 @@ public class SeedData
 
     private void SeedBids()
     {
-        _dbContext.Bids.AddRange(
+        dbContext.Bids.AddRange(
             new Bid
             {
                 Id = 1,

@@ -12,51 +12,31 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class ProductController : ControllerBase
+public class ProductController(
+    IProductService productService,
+    IWebHostEnvironment webHostEnvironment,
+    IConfiguration configuration,
+    ICategoryService categoryService,
+    IValidator<ProductCreateRequest> createValidator,
+    IValidator<ProductUpdateRequest> updateValidator)
+    : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
-
-    private readonly IConfiguration _configuration;
-
-    private readonly IValidator<ProductCreateRequest> _createValidator;
-
-    private readonly IProductService _productService;
-
-    private readonly IValidator<ProductUpdateRequest> _updateValidator;
-
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    public ProductController(IProductService productService,
-        IWebHostEnvironment webHostEnvironment,
-        IConfiguration configuration,
-        ICategoryService categoryService,
-        IValidator<ProductCreateRequest> createValidator,
-        IValidator<ProductUpdateRequest> updateValidator)
-    {
-        _updateValidator = updateValidator;
-        _productService = productService;
-        _webHostEnvironment = webHostEnvironment;
-        _configuration = configuration;
-        _categoryService = categoryService;
-        _createValidator = createValidator;
-    }
-
     [HttpGet]
     public IEnumerable<ProductViewModel> Get()
     {
-        return _productService.Get().Select(x => new ProductViewModel
+        return productService.Get().Select(x => new ProductViewModel
         {
             Id = x.Id,
             Name = x.Name,
             Description = x.Description,
-            ImageUrl = x.ImageIsExternal ? x.ImageUrl : $"{_configuration["BackendUrl"]}{x.ImageUrl}",
+            ImageUrl = x.ImageIsExternal ? x.ImageUrl : $"{configuration["BackendUrl"]}{x.ImageUrl}",
         });
     }
 
     [HttpGet("{id:int}")]
     public IActionResult Get(long id)
     {
-        Product? product = _productService.GetById(id);
+        Product? product = productService.GetById(id);
         if (product == null)
         {
             return NotFound();
@@ -67,7 +47,7 @@ public class ProductController : ControllerBase
             Id = product.Id,
             Name = product.Name,
             Description = product.Description,
-            ImageUrl = product.ImageIsExternal ? product.ImageUrl : $"{_configuration["BackendUrl"]}{product.ImageUrl}",
+            ImageUrl = product.ImageIsExternal ? product.ImageUrl : $"{configuration["BackendUrl"]}{product.ImageUrl}",
             Category = product.Category == null
                 ? null
                 : new CategoryViewModel
@@ -91,13 +71,13 @@ public class ProductController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Post([FromForm] ProductCreateRequest productCreateRequest)
     {
-        ValidationResult result = await _createValidator.ValidateAsync(productCreateRequest);
+        ValidationResult result = await createValidator.ValidateAsync(productCreateRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
 
-        if (!_categoryService.Exists(productCreateRequest.CategoryId ?? 0))
+        if (!categoryService.Exists(productCreateRequest.CategoryId ?? 0))
         {
             return BadRequest(new { Message = "Category not found" });
         }
@@ -106,11 +86,11 @@ public class ProductController : ControllerBase
         {
             Name = productCreateRequest.Name,
             Description = productCreateRequest.Description,
-            ImageUrl = await FileService.SaveImageAsync(productCreateRequest.Image, _webHostEnvironment) ?? "",
+            ImageUrl = await FileService.SaveImageAsync(productCreateRequest.Image, webHostEnvironment) ?? "",
             CategoryId = productCreateRequest.CategoryId ?? 0,
         };
 
-        _productService.Create(product);
+        productService.Create(product);
 
         return NoContent();
     }
@@ -120,19 +100,19 @@ public class ProductController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Put(int id, [FromForm] ProductUpdateRequest productUpdateRequest)
     {
-        Product? product = _productService.GetById(id);
+        Product? product = productService.GetById(id);
         if (product == null)
         {
             return NotFound();
         }
 
-        ValidationResult result = await _updateValidator.ValidateAsync(productUpdateRequest);
+        ValidationResult result = await updateValidator.ValidateAsync(productUpdateRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
 
-        if (!_categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
+        if (!categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
         {
             return NotFound(new { Message = "Category not found" });
         }
@@ -140,7 +120,7 @@ public class ProductController : ControllerBase
         string imageUrl = product.ImageUrl;
         if (productUpdateRequest.Image != null)
         {
-            imageUrl = await FileService.SaveImageAsync(productUpdateRequest.Image, _webHostEnvironment) ?? "";
+            imageUrl = await FileService.SaveImageAsync(productUpdateRequest.Image, webHostEnvironment) ?? "";
         }
 
         product.Name = productUpdateRequest.Name;
@@ -149,7 +129,7 @@ public class ProductController : ControllerBase
         product.CategoryId = productUpdateRequest.CategoryId ?? 0;
         product.ImageIsExternal = productUpdateRequest.Image == null ? product.ImageIsExternal : false;
 
-        _productService.Update(product);
+        productService.Update(product);
 
         return NoContent();
     }
@@ -158,12 +138,12 @@ public class ProductController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult Delete(int id)
     {
-        if (!_productService.Exists(id))
+        if (!productService.Exists(id))
         {
             return NotFound();
         }
 
-        _productService.Delete(id);
+        productService.Delete(id);
 
         return NoContent();
     }
