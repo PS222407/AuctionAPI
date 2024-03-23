@@ -25,4 +25,4 @@ jobs:
       uses: muno92/resharper_inspectcode@1.6.0
       with:
         solutionPath: ./AuctionAPI.sln
-        minimumSeverity: "error"
+        minimumSeverity: 'error'
