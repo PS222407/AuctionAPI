@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
         ValidationResult result = _userValidator.Validate(userRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
         
         string passwordHash = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
@@ -65,7 +65,7 @@ public class AuthController : ControllerBase
         ValidationResult result = _userValidator.Validate(userRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
         
         User? user = _context.Users.Include(u => u.Roles).FirstOrDefault(u => u.Email == userRequest.Email);
@@ -98,7 +98,7 @@ public class AuthController : ControllerBase
         ValidationResult result = _refreshTokenValidator.Validate(refreshTokenRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
         
         User? user = _context.Users

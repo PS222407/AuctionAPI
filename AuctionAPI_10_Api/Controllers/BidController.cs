@@ -39,7 +39,7 @@ public class BidController : ControllerBase
         ValidationResult result = await _validator.ValidateAsync(bidRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;

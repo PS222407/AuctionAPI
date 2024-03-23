@@ -99,7 +99,7 @@ public class AuctionController : ControllerBase
         ValidationResult result = _validator.Validate(auctionRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         if (!_productService.Exists(auctionRequest.ProductId))
@@ -131,7 +131,7 @@ public class AuctionController : ControllerBase
         ValidationResult result = _validator.Validate(auctionRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         if (!_productService.Exists(auctionRequest.ProductId))
