@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace AuctionAPI_20_BusinessLogic.Models;
+﻿namespace AuctionAPI_20_BusinessLogic.Models;
 
 public class Bid
 {
@@ -16,5 +14,5 @@ public class Bid
 
     public string UserId { get; set; }
 
-    public IdentityUser User { get; set; }
+    public User User { get; set; }
 }

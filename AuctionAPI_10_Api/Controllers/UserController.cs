@@ -20,31 +20,10 @@ public class UserController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpGet("{email}")]
-    public IActionResult Get(string email)
-    {
-        return Ok(_userService.SearchByEmail(email).Select(x => new UserViewModel
-        {
-            Id = x.Id,
-            Name = x.UserName,
-            Email = x.Email,
-        }));
-    }
-
-    [HttpGet("Info")]
-    [Authorize]
-    public List<string> GetInfo()
-    {
-        return User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(r => r.Value).ToList();
-    }
-
     [HttpGet("Auctions/Won")]
     [Authorize]
     public IActionResult GetWonAuctions()
     {
-        // string adminId = "0206A018-5AC6-492D-AB99-10105193D384";
-        // string employeeId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652";
-
         string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
         return Ok(_userService.GetWonAuctions(userId)

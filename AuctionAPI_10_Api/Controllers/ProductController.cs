@@ -94,7 +94,7 @@ public class ProductController : ControllerBase
         ValidationResult result = await _createValidator.ValidateAsync(productCreateRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         if (!_categoryService.Exists(productCreateRequest.CategoryId ?? 0))
@@ -129,7 +129,7 @@ public class ProductController : ControllerBase
         ValidationResult result = await _updateValidator.ValidateAsync(productUpdateRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         if (!_categoryService.Exists(productUpdateRequest.CategoryId ?? 0))

@@ -21,8 +21,11 @@ public class AuctionController : ControllerBase
 
     private readonly IValidator<AuctionRequest> _validator;
 
-    public AuctionController(IAuctionService auctionService, IConfiguration configuration,
-        IProductService productService, IValidator<AuctionRequest> validator)
+    public AuctionController(
+        IAuctionService auctionService,
+        IConfiguration configuration,
+        IProductService productService,
+        IValidator<AuctionRequest> validator)
     {
         _auctionService = auctionService;
         _configuration = configuration;
@@ -80,7 +83,6 @@ public class AuctionController : ControllerBase
                 User = new UserViewModel
                 {
                     Id = b.User.Id,
-                    Name = b.User.UserName,
                     Email = b.User.Email,
                 },
                 CreatedAt = b.CreatedAt,
@@ -97,7 +99,7 @@ public class AuctionController : ControllerBase
         ValidationResult result = _validator.Validate(auctionRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         if (!_productService.Exists(auctionRequest.ProductId))
@@ -129,7 +131,7 @@ public class AuctionController : ControllerBase
         ValidationResult result = _validator.Validate(auctionRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         if (!_productService.Exists(auctionRequest.ProductId))

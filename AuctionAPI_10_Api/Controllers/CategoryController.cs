@@ -20,7 +20,7 @@ public class CategoryController : ControllerBase
     private readonly IValidator<CategoryRequest> _validator;
 
     public CategoryController(
-        ICategoryService categoryService, 
+        ICategoryService categoryService,
         IConfiguration configuration,
         IValidator<CategoryRequest> validator)
     {
@@ -73,7 +73,7 @@ public class CategoryController : ControllerBase
         ValidationResult result = _validator.Validate(categoryRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         Category category = new()
@@ -99,7 +99,7 @@ public class CategoryController : ControllerBase
         ValidationResult result = _validator.Validate(categoryRequest);
         if (!result.IsValid)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(new { result.Errors });
         }
 
         Category category = new()
