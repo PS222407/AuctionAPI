@@ -101,14 +101,20 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors);
         }
         
-        User? user = _context.Users.Include(u => u.RefreshTokens).FirstOrDefault(u => u.RefreshTokens.Any(rt => rt.Token == refreshTokenRequest.RefreshToken));
+        User? user = _context.Users
+            .Include(u => u.Roles)
+            .Include(u => u.RefreshTokens)
+            .FirstOrDefault(u => u.RefreshTokens.Any(rt => rt.Token == refreshTokenRequest.RefreshToken));
         if (user == null)
         {
             return Unauthorized();
         }
 
         RefreshToken refreshToken = GenerateRefreshToken();
-        _context.RefreshTokens.Remove(user.RefreshTokens.First(rt => rt.Token == refreshTokenRequest.RefreshToken));
+        RefreshToken tokenToDelete = user.RefreshTokens.First(rt => rt.Token == refreshTokenRequest.RefreshToken);
+        _context.RefreshTokens.Remove(tokenToDelete);
+        _context.SaveChanges();
+
         user.RefreshTokens.Add(refreshToken);
         _context.SaveChanges();
 

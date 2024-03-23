@@ -59,7 +59,7 @@ public class BidController : ControllerBase
             User = new UserRequest
             {
                 Id = userId,
-                Name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value,
+                Name = User.Claims.First(c => c.Type == ClaimTypes.Email).Value,
                 Email = User.Claims.First(c => c.Type == ClaimTypes.Email).Value,
             },
             PriceInCents = bidRequest.PriceInCents,
