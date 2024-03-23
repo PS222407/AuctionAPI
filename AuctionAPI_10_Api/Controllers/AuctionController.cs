@@ -21,8 +21,11 @@ public class AuctionController : ControllerBase
 
     private readonly IValidator<AuctionRequest> _validator;
 
-    public AuctionController(IAuctionService auctionService, IConfiguration configuration,
-        IProductService productService, IValidator<AuctionRequest> validator)
+    public AuctionController(
+        IAuctionService auctionService,
+        IConfiguration configuration,
+        IProductService productService,
+        IValidator<AuctionRequest> validator)
     {
         _auctionService = auctionService;
         _configuration = configuration;
@@ -80,7 +83,6 @@ public class AuctionController : ControllerBase
                 User = new UserViewModel
                 {
                     Id = b.User.Id,
-                    Name = b.User.UserName,
                     Email = b.User.Email,
                 },
                 CreatedAt = b.CreatedAt,
