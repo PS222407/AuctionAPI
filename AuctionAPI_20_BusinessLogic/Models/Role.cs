@@ -1,6 +1,10 @@
-namespace AuctionAPI_20_BusinessLogic.Models;
+﻿namespace AuctionAPI_20_BusinessLogic.Models;
 
 public class Role
 {
-    public string Name { get; set; }
+    public string Id { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public List<User> Users { get; set; } = [];
 }

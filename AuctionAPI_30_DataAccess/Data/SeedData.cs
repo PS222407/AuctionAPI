@@ -1,5 +1,4 @@
 ﻿using AuctionAPI_20_BusinessLogic.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
@@ -40,49 +39,37 @@ public class SeedData
     private void SeedUsersAndRoles()
     {
         _dbContext.Users.AddRange(
-            new IdentityUser
+            new User
             {
                 Id = "0206A018-5AC6-492D-AB99-10105193D384",
                 Email = "admin@gmail.com",
-                NormalizedEmail = "admin@gmail.com",
-                UserName = "admin@gmail.com",
-                NormalizedUserName = "admin@gmail.com",
-                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, "Password123!"),
+                Password = BCrypt.Net.BCrypt.HashPassword("Password123!"),
             },
-            new IdentityUser
+            new User
             {
                 Id = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
                 Email = "employee@gmail.com",
-                NormalizedEmail = "employee@gmail.com",
-                UserName = "employee@gmail.com",
-                NormalizedUserName = "employee@gmail.com",
-                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, "Password123!"),
+                Password = BCrypt.Net.BCrypt.HashPassword("Password123!"),
             }
         );
 
         _dbContext.Roles.AddRange(
-            new IdentityRole
+            new Role
             {
-                Id = "8977148E-C765-410F-9A58-0C7D054E4536", Name = "Admin", NormalizedName = "ADMIN",
+                Id = "8977148E-C765-410F-9A58-0C7D054E4536", Name = "Admin",
             },
-            new IdentityRole
+            new Role
             {
-                Id = "81659B09-5665-4E61-ACB9-5C43E28BE6A4", Name = "Employee", NormalizedName = "EMPLOYEE",
+                Id = "81659B09-5665-4E61-ACB9-5C43E28BE6A4", Name = "Employee",
             }
         );
 
-        _dbContext.UserRoles.AddRange(
-            new IdentityUserRole<string>
-            {
-                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
-                RoleId = "8977148E-C765-410F-9A58-0C7D054E4536",
-            },
-            new IdentityUserRole<string>
-            {
-                UserId = "3FEF01FF-C53F-43B1-96BE-9D806DEC8652",
-                RoleId = "81659B09-5665-4E61-ACB9-5C43E28BE6A4",
-            }
-        );
+        _dbContext.SaveChanges();
+
+        List<User> users = _dbContext.Users.ToList();
+        List<Role> roles = _dbContext.Roles.ToList();
+        users.Find(u => u.Email == "admin@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Admin"));
+        users.Find(u => u.Email == "employee@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Employee"));
     }
 
     private void SeedCategories()

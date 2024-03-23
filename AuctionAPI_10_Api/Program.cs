@@ -1,3 +1,4 @@
+using System.Text;
 using AuctionAPI_10_Api.Hub;
 using AuctionAPI_10_Api.Middleware;
 using AuctionAPI_10_Api.RequestModels;
@@ -8,8 +9,9 @@ using AuctionAPI_20_BusinessLogic.Services;
 using AuctionAPI_30_DataAccess.Data;
 using AuctionAPI_30_DataAccess.Repositories;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -35,6 +37,8 @@ builder.Services.AddScoped<IValidator<AuctionRequest>, AuctionRequestValidator>(
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
 builder.Services.AddScoped<IValidator<ProductCreateRequest>, ProductCreateRequestValidator>();
 builder.Services.AddScoped<IValidator<ProductUpdateRequest>, ProductUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<UserRequest>, UserRequestValidator>();
+builder.Services.AddScoped<IValidator<RefreshTokenRequest>, RefreshTokenRequestValidator>();
 
 builder.Services.AddSignalR();
 
@@ -61,12 +65,21 @@ builder.Services.AddDbContext<DataContext>(options =>
         mySqlOptions => mySqlOptions.MigrationsAssembly("AuctionAPI_30_DataAccess")
     ));
 
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>(),
+        ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>(),
+        IssuerSigningKey =
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Get<string>()!)),
+    });
+
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddRoles<IdentityRole>()
-    .AddRoleManager<RoleManager<IdentityRole>>()
-    .AddEntityFrameworkStores<DataContext>();
 
 builder.Services.AddControllers();
 
@@ -98,13 +111,12 @@ app.UseSwagger();
 app.UseSwaggerUI();
 // }
 
-app.MapGroup("/api").MapIdentityApi<IdentityUser>();
-
 app.UseHttpsRedirection();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
