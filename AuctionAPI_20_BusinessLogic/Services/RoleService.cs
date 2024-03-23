@@ -1,5 +1,4 @@
 using AuctionAPI_20_BusinessLogic.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace AuctionAPI_20_BusinessLogic.Services;
 

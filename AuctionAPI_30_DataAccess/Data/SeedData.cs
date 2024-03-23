@@ -1,5 +1,4 @@
 ﻿using AuctionAPI_20_BusinessLogic.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
@@ -53,7 +52,7 @@ public class SeedData
                 Password = BCrypt.Net.BCrypt.HashPassword("Password123!"),
             }
         );
-        
+
         _dbContext.Roles.AddRange(
             new Role
             {
@@ -66,7 +65,7 @@ public class SeedData
         );
 
         _dbContext.SaveChanges();
-        
+
         List<User> users = _dbContext.Users.ToList();
         List<Role> roles = _dbContext.Roles.ToList();
         users.Find(u => u.Email == "admin@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Admin"));

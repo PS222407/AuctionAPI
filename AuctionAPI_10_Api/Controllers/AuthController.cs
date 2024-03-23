@@ -17,13 +17,13 @@ namespace AuctionAPI_10_Api.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly DataContext _context;
-
     private readonly IConfiguration _config;
 
-    private readonly IValidator<UserRequest> _userValidator;
+    private readonly DataContext _context;
 
     private readonly IValidator<RefreshTokenRequest> _refreshTokenValidator;
+
+    private readonly IValidator<UserRequest> _userValidator;
 
     public AuthController(
         DataContext context,
@@ -45,7 +45,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { result.Errors });
         }
-        
+
         string passwordHash = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
 
         _context.Users.Add(new User
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { result.Errors });
         }
-        
+
         User? user = _context.Users.Include(u => u.Roles).FirstOrDefault(u => u.Email == userRequest.Email);
         if (user == null)
         {
@@ -88,7 +88,7 @@ public class AuthController : ControllerBase
             AccessToken = GenerateJwtToken(user),
             RefreshToken = refreshToken.Token,
             TokenType = "Bearer",
-            ExpiresIn = _config.GetValue<int>("Jwt:ExpiresIn")
+            ExpiresIn = _config.GetValue<int>("Jwt:ExpiresIn"),
         });
     }
 
@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { result.Errors });
         }
-        
+
         User? user = _context.Users
             .Include(u => u.Roles)
             .Include(u => u.RefreshTokens)
@@ -123,16 +123,16 @@ public class AuthController : ControllerBase
             AccessToken = GenerateJwtToken(user),
             RefreshToken = refreshToken.Token,
             TokenType = "Bearer",
-            ExpiresIn = _config.GetValue<int>("Jwt:ExpiresIn")
+            ExpiresIn = _config.GetValue<int>("Jwt:ExpiresIn"),
         });
     }
-    
+
     private string GenerateJwtToken(User user)
     {
         List<Claim> claims =
         [
             new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.Email, user.Email),
         ];
         user.Roles.ForEach(r => claims.Add(new Claim(ClaimTypes.Role, r.Name)));
 
@@ -155,7 +155,7 @@ public class AuthController : ControllerBase
         return new RefreshToken
         {
             Id = Guid.NewGuid().ToString(),
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64))
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
         };
     }
 }

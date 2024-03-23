@@ -1,9 +1,4 @@
-﻿using AuctionAPI_20_BusinessLogic.Interfaces;
-using AuctionAPI_20_BusinessLogic.Services;
-using Microsoft.AspNetCore.Identity;
-using Moq;
-
-namespace UnitTests;
+﻿namespace UnitTests;
 
 [TestFixture]
 public class RoleServiceTests

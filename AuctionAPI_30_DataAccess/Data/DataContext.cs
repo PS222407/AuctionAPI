@@ -16,10 +16,10 @@ public class DataContext : DbContext
     public DbSet<Auction> Auctions { get; set; }
 
     public DbSet<Bid> Bids { get; set; }
-    
+
     public DbSet<User> Users { get; set; }
-    
+
     public DbSet<Role> Roles { get; set; }
-    
+
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 }

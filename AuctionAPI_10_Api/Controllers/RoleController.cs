@@ -1,7 +1,3 @@
-using AuctionAPI_10_Api.RequestModels;
-using AuctionAPI_10_Api.ViewModels;
-using AuctionAPI_20_BusinessLogic.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI_10_Api.Controllers;

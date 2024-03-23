@@ -20,7 +20,7 @@ public class CategoryController : ControllerBase
     private readonly IValidator<CategoryRequest> _validator;
 
     public CategoryController(
-        ICategoryService categoryService, 
+        ICategoryService categoryService,
         IConfiguration configuration,
         IValidator<CategoryRequest> validator)
     {
