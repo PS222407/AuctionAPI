@@ -5,20 +5,13 @@ using NuGet.ProjectModel;
 
 namespace AuctionAPI_10_Api.Middleware;
 
-public class GlobalExceptionMiddleware
+public class GlobalExceptionMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public GlobalExceptionMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (InvalidOperationException e) when (e.InnerException is MySqlException &&
                                                   e.InnerException.Message ==

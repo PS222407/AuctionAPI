@@ -5,19 +5,12 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class SeederController : ControllerBase
+public class SeederController(DataContext dbContext) : ControllerBase
 {
-    private readonly DataContext _dbContext;
-
-    public SeederController(DataContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Seed()
     {
-        await new SeedData(_dbContext).ResetDatabaseAndSeed();
+        await new SeedData(dbContext).ResetDatabaseAndSeed();
 
         return NoContent();
     }

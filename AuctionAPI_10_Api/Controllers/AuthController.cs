@@ -15,32 +15,17 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController(
+    DataContext context,
+    IConfiguration config,
+    IValidator<UserRequest> userValidator,
+    IValidator<RefreshTokenRequest> refreshTokenValidator)
+    : ControllerBase
 {
-    private readonly IConfiguration _config;
-
-    private readonly DataContext _context;
-
-    private readonly IValidator<RefreshTokenRequest> _refreshTokenValidator;
-
-    private readonly IValidator<UserRequest> _userValidator;
-
-    public AuthController(
-        DataContext context,
-        IConfiguration config,
-        IValidator<UserRequest> userValidator,
-        IValidator<RefreshTokenRequest> refreshTokenValidator)
-    {
-        _context = context;
-        _config = config;
-        _userValidator = userValidator;
-        _refreshTokenValidator = refreshTokenValidator;
-    }
-
     [HttpPost("Register")]
     public ActionResult Register([FromBody] UserRequest userRequest)
     {
-        ValidationResult result = _userValidator.Validate(userRequest);
+        ValidationResult result = userValidator.Validate(userRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
@@ -48,13 +33,13 @@ public class AuthController : ControllerBase
 
         string passwordHash = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
 
-        _context.Users.Add(new User
+        context.Users.Add(new User
         {
             Id = Guid.NewGuid().ToString(),
             Email = userRequest.Email,
             Password = passwordHash,
         });
-        _context.SaveChanges();
+        context.SaveChanges();
 
         return NoContent();
     }
@@ -62,13 +47,13 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public ActionResult<User> Login([FromBody] UserRequest userRequest)
     {
-        ValidationResult result = _userValidator.Validate(userRequest);
+        ValidationResult result = userValidator.Validate(userRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
 
-        User? user = _context.Users.Include(u => u.Roles).FirstOrDefault(u => u.Email == userRequest.Email);
+        User? user = context.Users.Include(u => u.Roles).FirstOrDefault(u => u.Email == userRequest.Email);
         if (user == null)
         {
             return Unauthorized();
@@ -81,27 +66,27 @@ public class AuthController : ControllerBase
 
         RefreshToken refreshToken = GenerateRefreshToken();
         user.RefreshTokens.Add(refreshToken);
-        _context.SaveChanges();
+        context.SaveChanges();
 
         return Ok(new
         {
             AccessToken = GenerateJwtToken(user),
             RefreshToken = refreshToken.Token,
             TokenType = "Bearer",
-            ExpiresIn = _config.GetValue<int>("Jwt:ExpiresIn"),
+            ExpiresIn = config.GetValue<int>("Jwt:ExpiresIn"),
         });
     }
 
     [HttpPost("Refresh")]
     public ActionResult Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
     {
-        ValidationResult result = _refreshTokenValidator.Validate(refreshTokenRequest);
+        ValidationResult result = refreshTokenValidator.Validate(refreshTokenRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
 
-        User? user = _context.Users
+        User? user = context.Users
             .Include(u => u.Roles)
             .Include(u => u.RefreshTokens)
             .FirstOrDefault(u => u.RefreshTokens.Any(rt => rt.Token == refreshTokenRequest.RefreshToken));
@@ -112,18 +97,18 @@ public class AuthController : ControllerBase
 
         RefreshToken refreshToken = GenerateRefreshToken();
         RefreshToken tokenToDelete = user.RefreshTokens.First(rt => rt.Token == refreshTokenRequest.RefreshToken);
-        _context.RefreshTokens.Remove(tokenToDelete);
-        _context.SaveChanges();
+        context.RefreshTokens.Remove(tokenToDelete);
+        context.SaveChanges();
 
         user.RefreshTokens.Add(refreshToken);
-        _context.SaveChanges();
+        context.SaveChanges();
 
         return Ok(new
         {
             AccessToken = GenerateJwtToken(user),
             RefreshToken = refreshToken.Token,
             TokenType = "Bearer",
-            ExpiresIn = _config.GetValue<int>("Jwt:ExpiresIn"),
+            ExpiresIn = config.GetValue<int>("Jwt:ExpiresIn"),
         });
     }
 
@@ -136,14 +121,14 @@ public class AuthController : ControllerBase
         ];
         user.Roles.ForEach(r => claims.Add(new Claim(ClaimTypes.Role, r.Name)));
 
-        SymmetricSecurityKey symmetricSecurityKey = new(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+        SymmetricSecurityKey symmetricSecurityKey = new(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         SigningCredentials credentials = new(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
         JwtSecurityToken jwtSecurityToken = new(
-            audience: _config["Jwt:Audience"],
-            issuer: _config["Jwt:Issuer"],
+            audience: config["Jwt:Audience"],
+            issuer: config["Jwt:Issuer"],
             claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(_config.GetValue<int>("Jwt:ExpiresIn")),
+            expires: DateTime.UtcNow.AddSeconds(config.GetValue<int>("Jwt:ExpiresIn")),
             signingCredentials: credentials
         );
 

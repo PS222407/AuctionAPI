@@ -14,29 +14,16 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class BidController : ControllerBase
+public class BidController(
+    IBidService bidService,
+    IHubContext<MainHub, IMainHubClient> hubContext,
+    IValidator<BidRequest> validator) : ControllerBase
 {
-    private readonly IBidService _bidService;
-
-    private readonly IHubContext<MainHub, IMainHubClient> _hubContext;
-
-    private readonly IValidator<BidRequest> _validator;
-
-    public BidController(
-        IBidService bidService,
-        IHubContext<MainHub, IMainHubClient> hubContext,
-        IValidator<BidRequest> validator)
-    {
-        _bidService = bidService;
-        _hubContext = hubContext;
-        _validator = validator;
-    }
-
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] BidRequest bidRequest)
     {
-        ValidationResult result = await _validator.ValidateAsync(bidRequest);
+        ValidationResult result = await validator.ValidateAsync(bidRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
@@ -46,7 +33,7 @@ public class BidController : ControllerBase
         DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
             TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"));
 
-        _bidService.Create(new Bid
+        bidService.Create(new Bid
         {
             AuctionId = bidRequest.AuctionId,
             PriceInCents = bidRequest.PriceInCents,
@@ -65,7 +52,7 @@ public class BidController : ControllerBase
             PriceInCents = bidRequest.PriceInCents,
             CreatedAt = now,
         };
-        await _hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
+        await hubContext.Clients.Group($"Auction-{bidRequest.AuctionId}").ReceiveBids(br);
 
         return NoContent();
     }

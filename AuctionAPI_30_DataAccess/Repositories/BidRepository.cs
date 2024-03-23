@@ -4,18 +4,11 @@ using AuctionAPI_30_DataAccess.Data;
 
 namespace AuctionAPI_30_DataAccess.Repositories;
 
-public class BidRepository : IBidRepository
+public class BidRepository(DataContext dbContext) : IBidRepository
 {
-    private readonly DataContext _dbContext;
-
-    public BidRepository(DataContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public bool Create(Bid bid)
     {
-        _dbContext.Bids.Add(bid);
-        return _dbContext.SaveChanges() > 0;
+        dbContext.Bids.Add(bid);
+        return dbContext.SaveChanges() > 0;
     }
 }

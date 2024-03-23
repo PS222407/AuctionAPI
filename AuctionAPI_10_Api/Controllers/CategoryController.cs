@@ -11,28 +11,15 @@ namespace AuctionAPI_10_Api.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class CategoryController : ControllerBase
+public class CategoryController(
+    ICategoryService categoryService,
+    IConfiguration configuration,
+    IValidator<CategoryRequest> validator) : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
-
-    private readonly IConfiguration _configuration;
-
-    private readonly IValidator<CategoryRequest> _validator;
-
-    public CategoryController(
-        ICategoryService categoryService,
-        IConfiguration configuration,
-        IValidator<CategoryRequest> validator)
-    {
-        _categoryService = categoryService;
-        _configuration = configuration;
-        _validator = validator;
-    }
-
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_categoryService.Get().Select(c => new CategoryViewModel
+        return Ok(categoryService.Get().Select(c => new CategoryViewModel
         {
             Id = c.Id,
             Name = c.Name,
@@ -43,7 +30,7 @@ public class CategoryController : ControllerBase
     [HttpGet("{id:int}")]
     public IActionResult Get(int id)
     {
-        Category? category = _categoryService.GetById(id);
+        Category? category = categoryService.GetById(id);
         if (category == null)
         {
             return NotFound();
@@ -59,7 +46,7 @@ public class CategoryController : ControllerBase
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                ImageUrl = p.ImageIsExternal ? p.ImageUrl : $"{_configuration["BackendUrl"]}{p.ImageUrl}",
+                ImageUrl = p.ImageIsExternal ? p.ImageUrl : $"{configuration["BackendUrl"]}{p.ImageUrl}",
             }).ToList(),
         };
 
@@ -70,7 +57,7 @@ public class CategoryController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromBody] CategoryRequest categoryRequest)
     {
-        ValidationResult result = _validator.Validate(categoryRequest);
+        ValidationResult result = validator.Validate(categoryRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
@@ -82,7 +69,7 @@ public class CategoryController : ControllerBase
             Icon = categoryRequest.Icon,
         };
 
-        _categoryService.Create(category);
+        categoryService.Create(category);
 
         return NoContent();
     }
@@ -91,12 +78,12 @@ public class CategoryController : ControllerBase
     [HttpPut("{id:int}")]
     public IActionResult Put(int id, [FromBody] CategoryRequest categoryRequest)
     {
-        if (!_categoryService.Exists(id))
+        if (!categoryService.Exists(id))
         {
             return NotFound();
         }
 
-        ValidationResult result = _validator.Validate(categoryRequest);
+        ValidationResult result = validator.Validate(categoryRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
@@ -109,7 +96,7 @@ public class CategoryController : ControllerBase
             Icon = categoryRequest.Icon,
         };
 
-        _categoryService.Update(category);
+        categoryService.Update(category);
 
         return NoContent();
     }
@@ -118,12 +105,12 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult Delete(int id)
     {
-        if (!_categoryService.Exists(id))
+        if (!categoryService.Exists(id))
         {
             return NotFound();
         }
 
-        _categoryService.Delete(id);
+        categoryService.Delete(id);
 
         return NoContent();
     }
