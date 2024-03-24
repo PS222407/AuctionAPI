@@ -48,7 +48,7 @@ public class ProductServiceTests
         Product? result = _productService.Create(product);
 
         // Assert
-        Assert.That(result, Is.True);
+        Assert.That(result, Is.Not.Null);
     }
 
     [Test]
