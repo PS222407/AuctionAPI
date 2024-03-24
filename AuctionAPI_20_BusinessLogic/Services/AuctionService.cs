@@ -10,7 +10,7 @@ public class AuctionService(IAuctionRepository auctionRepository) : IAuctionServ
         return auctionRepository.Get();
     }
 
-    public bool Create(Auction auction)
+    public Auction? Create(Auction auction)
     {
         return auctionRepository.Create(auction);
     }

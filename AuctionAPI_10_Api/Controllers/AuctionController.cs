@@ -1,4 +1,5 @@
-﻿using AuctionAPI_10_Api.RequestModels;
+﻿using AuctionAPI_10_Api.Mappers;
+using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Models;
@@ -19,26 +20,15 @@ public class AuctionController(
     : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(200)]
     public IActionResult Get()
     {
-        return Ok(auctionService.Get().Select(a => new AuctionViewModel
-        {
-            Id = a.Id,
-            Product = new ProductViewModel
-            {
-                Id = a.Product.Id,
-                Name = a.Product.Name,
-                Description = a.Product.Description,
-                ImageUrl = a.Product.ImageIsExternal
-                    ? a.Product.ImageUrl
-                    : $"{configuration["BackendUrl"]}{a.Product.ImageUrl}",
-            },
-            DurationInSeconds = a.DurationInSeconds,
-            StartDateTime = a.StartDateTime,
-        }));
+        return Ok(auctionService.Get().Select(a => AuctionMapper.MapToViewModel(a, configuration)));
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
     public IActionResult Get([FromRoute] int id)
     {
         Auction? auction = auctionService.GetById(id);
@@ -47,38 +37,15 @@ public class AuctionController(
             return NotFound();
         }
 
-        AuctionViewModel auctionViewModel = new()
-        {
-            Id = auction.Id,
-            Product = new ProductViewModel
-            {
-                Id = auction.Product.Id,
-                Name = auction.Product.Name,
-                Description = auction.Product.Description,
-                ImageUrl = auction.Product.ImageIsExternal
-                    ? auction.Product.ImageUrl
-                    : $"{configuration["BackendUrl"]}{auction.Product.ImageUrl}",
-            },
-            DurationInSeconds = auction.DurationInSeconds,
-            StartDateTime = auction.StartDateTime,
-            Bids = auction.Bids.Select(b => new BidViewModel
-            {
-                Id = b.Id,
-                PriceInCents = b.PriceInCents,
-                User = new UserViewModel
-                {
-                    Id = b.User.Id,
-                    Email = b.User.Email,
-                },
-                CreatedAt = b.CreatedAt,
-            }).ToList(),
-        };
+        AuctionViewModel auctionViewModel = AuctionMapper.MapToViewModel(auction, configuration);
 
         return Ok(auctionViewModel);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
     public IActionResult Post([FromBody] AuctionRequest auctionRequest)
     {
         ValidationResult result = validator.Validate(auctionRequest);
@@ -89,7 +56,7 @@ public class AuctionController(
 
         if (!productService.Exists(auctionRequest.ProductId))
         {
-            return BadRequest("Product not found");
+            return BadRequest(new { Message = "Product not found" });
         }
 
         Auction auction = new()
@@ -99,13 +66,20 @@ public class AuctionController(
             StartDateTime = auctionRequest.StartDateTime,
         };
 
-        auctionService.Create(auction);
+        Auction? createdAuction = auctionService.Create(auction);
+        if (createdAuction == null)
+        {
+            return BadRequest(new { Message = "Auction could not be created" });
+        }
 
-        return NoContent();
+        return CreatedAtAction("Get", new { id = auction.Id }, AuctionMapper.MapToViewModel(createdAuction, configuration));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(400)]
     public IActionResult Put([FromRoute] int id, [FromBody] AuctionRequest auctionRequest)
     {
         if (!auctionService.Exists(id))
@@ -139,6 +113,8 @@ public class AuctionController(
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
     public IActionResult Delete(int id)
     {
         if (!auctionService.Exists(id))

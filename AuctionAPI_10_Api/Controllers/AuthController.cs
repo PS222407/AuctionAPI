@@ -23,7 +23,9 @@ public class AuthController(
     : ControllerBase
 {
     [HttpPost("Register")]
-    public ActionResult Register([FromBody] UserRequest userRequest)
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    public IActionResult Register([FromBody] UserRequest userRequest)
     {
         ValidationResult result = userValidator.Validate(userRequest);
         if (!result.IsValid)
@@ -45,7 +47,10 @@ public class AuthController(
     }
 
     [HttpPost("Login")]
-    public ActionResult<User> Login([FromBody] UserRequest userRequest)
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    public IActionResult Login([FromBody] UserRequest userRequest)
     {
         ValidationResult result = userValidator.Validate(userRequest);
         if (!result.IsValid)
@@ -78,7 +83,10 @@ public class AuthController(
     }
 
     [HttpPost("Refresh")]
-    public ActionResult Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    public IActionResult Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
     {
         ValidationResult result = refreshTokenValidator.Validate(refreshTokenRequest);
         if (!result.IsValid)

@@ -12,10 +12,10 @@ public class ProductRepository(DataContext dbContext) : IProductRepository
         return dbContext.Products.ToList();
     }
 
-    public bool Create(Product product)
+    public Product? Create(Product product)
     {
         dbContext.Products.Add(product);
-        return dbContext.SaveChanges() > 0;
+        return dbContext.SaveChanges() <= 0 ? null : product;
     }
 
     public Product? GetById(long id)

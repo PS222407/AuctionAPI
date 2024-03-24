@@ -6,7 +6,7 @@ public class Bid
 
     public long AuctionId { get; set; }
 
-    public Auction Auction { get; set; }
+    public Auction? Auction { get; set; }
 
     public int PriceInCents { get; set; }
 

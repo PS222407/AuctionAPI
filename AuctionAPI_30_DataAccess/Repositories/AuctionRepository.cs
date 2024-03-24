@@ -14,10 +14,17 @@ public class AuctionRepository(DataContext dbContext) : IAuctionRepository
             .ToList();
     }
 
-    public bool Create(Auction auction)
+    public Auction? Create(Auction auction)
     {
         dbContext.Auctions.Add(auction);
-        return dbContext.SaveChanges() > 0;
+
+        if (dbContext.SaveChanges() <= 0)
+        {
+            return null;
+        }
+
+        dbContext.Entry(auction).Reference(a => a.Product).Load();
+        return auction;
     }
 
     public Auction? GetById(long id)

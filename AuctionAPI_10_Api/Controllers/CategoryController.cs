@@ -1,3 +1,4 @@
+using AuctionAPI_10_Api.Mappers;
 using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
@@ -17,17 +18,15 @@ public class CategoryController(
     IValidator<CategoryRequest> validator) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(200)]
     public IActionResult Get()
     {
-        return Ok(categoryService.Get().Select(c => new CategoryViewModel
-        {
-            Id = c.Id,
-            Name = c.Name,
-            Icon = c.Icon,
-        }));
+        return Ok(categoryService.Get().Select(c => CategoryMapper.MapToViewModel(c, configuration)));
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
     public IActionResult Get(int id)
     {
         Category? category = categoryService.GetById(id);
@@ -36,25 +35,15 @@ public class CategoryController(
             return NotFound();
         }
 
-        CategoryViewModel categoryViewModel = new()
-        {
-            Id = category.Id,
-            Name = category.Name,
-            Icon = category.Icon,
-            Products = category.Products.Select(p => new ProductViewModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                ImageUrl = p.ImageIsExternal ? p.ImageUrl : $"{configuration["BackendUrl"]}{p.ImageUrl}",
-            }).ToList(),
-        };
+        CategoryViewModel categoryViewModel = CategoryMapper.MapToViewModel(category, configuration);
 
         return Ok(categoryViewModel);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
     public IActionResult Post([FromBody] CategoryRequest categoryRequest)
     {
         ValidationResult result = validator.Validate(categoryRequest);
@@ -69,13 +58,20 @@ public class CategoryController(
             Icon = categoryRequest.Icon,
         };
 
-        categoryService.Create(category);
+        Category? createdCategory = categoryService.Create(category);
+        if (createdCategory == null)
+        {
+            return BadRequest(new { Message = "Category could not be created" });
+        }
 
-        return NoContent();
+        return CreatedAtAction("Get", new { id = category.Id }, CategoryMapper.MapToViewModel(createdCategory, configuration));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public IActionResult Put(int id, [FromBody] CategoryRequest categoryRequest)
     {
         if (!categoryService.Exists(id))
@@ -103,6 +99,8 @@ public class CategoryController(
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
     public IActionResult Delete(int id)
     {
         if (!categoryService.Exists(id))

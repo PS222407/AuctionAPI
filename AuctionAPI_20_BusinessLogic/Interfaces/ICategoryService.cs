@@ -6,7 +6,7 @@ public interface ICategoryService
 {
     public List<Category> Get();
 
-    public bool Create(Category product);
+    public Category? Create(Category product);
 
     public Category? GetById(long id);
 

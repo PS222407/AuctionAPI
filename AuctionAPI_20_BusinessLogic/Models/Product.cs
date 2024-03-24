@@ -16,5 +16,5 @@ public class Product
 
     public Category? Category { get; set; }
 
-    public List<Auction> Auctions { get; set; }
+    public List<Auction>? Auctions { get; set; }
 }

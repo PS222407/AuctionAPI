@@ -6,7 +6,7 @@ public interface IAuctionService
 {
     public List<Auction> Get();
 
-    public bool Create(Auction auction);
+    public Auction? Create(Auction auction);
 
     public Auction? GetById(long id);
 

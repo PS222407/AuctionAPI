@@ -10,7 +10,7 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         return categoryRepository.Get();
     }
 
-    public bool Create(Category category)
+    public Category? Create(Category category)
     {
         return categoryRepository.Create(category);
     }
