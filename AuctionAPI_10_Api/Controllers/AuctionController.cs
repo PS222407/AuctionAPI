@@ -72,7 +72,8 @@ public class AuctionController(
             return BadRequest(new { Message = "Auction could not be created" });
         }
 
-        return CreatedAtAction("Get", new { id = auction.Id }, AuctionMapper.MapToViewModel(createdAuction, configuration));
+        return CreatedAtAction("Get", new { id = auction.Id },
+            AuctionMapper.MapToViewModel(createdAuction, configuration));
     }
 
     [Authorize(Roles = "Admin")]

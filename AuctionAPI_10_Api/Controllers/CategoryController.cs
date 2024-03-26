@@ -64,7 +64,8 @@ public class CategoryController(
             return BadRequest(new { Message = "Category could not be created" });
         }
 
-        return CreatedAtAction("Get", new { id = category.Id }, CategoryMapper.MapToViewModel(createdCategory, configuration));
+        return CreatedAtAction("Get", new { id = category.Id },
+            CategoryMapper.MapToViewModel(createdCategory, configuration));
     }
 
     [Authorize(Roles = "Admin")]
