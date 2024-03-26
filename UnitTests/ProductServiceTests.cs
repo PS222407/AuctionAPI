@@ -94,4 +94,18 @@ public class ProductServiceTests
         // Assert
         Assert.That(result, Is.True);
     }
+
+    [Test]
+    public void Exists_ShouldReturnTrue()
+    {
+        // Arrange
+        _productRepositoryMock.Setup(x => x.Exists(1))
+            .Returns(true);
+
+        // Act
+        bool result = _productService.Exists(1);
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
 }
