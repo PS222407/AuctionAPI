@@ -42,13 +42,13 @@ public class ProductServiceTests
         // Arrange
         Product product = new() { Name = "Product 1" };
         _productRepositoryMock.Setup(x => x.Create(product))
-            .Returns(true);
+            .Returns(new Product());
 
         // Act
-        bool result = _productService.Create(product);
+        Product? result = _productService.Create(product);
 
         // Assert
-        Assert.That(result, Is.True);
+        Assert.That(result, Is.Not.Null);
     }
 
     [Test]

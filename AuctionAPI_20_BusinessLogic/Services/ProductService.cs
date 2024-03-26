@@ -10,7 +10,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return productRepository.Get();
     }
 
-    public bool Create(Product product)
+    public Product? Create(Product product)
     {
         return productRepository.Create(product);
     }

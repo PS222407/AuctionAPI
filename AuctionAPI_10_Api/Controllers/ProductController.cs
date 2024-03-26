@@ -1,4 +1,5 @@
-﻿using AuctionAPI_10_Api.RequestModels;
+﻿using AuctionAPI_10_Api.Mappers;
+using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Interfaces;
@@ -22,18 +23,15 @@ public class ProductController(
     : ControllerBase
 {
     [HttpGet]
-    public IEnumerable<ProductViewModel> Get()
+    [ProducesResponseType(200)]
+    public IActionResult Get()
     {
-        return productService.Get().Select(x => new ProductViewModel
-        {
-            Id = x.Id,
-            Name = x.Name,
-            Description = x.Description,
-            ImageUrl = x.ImageIsExternal ? x.ImageUrl : $"{configuration["BackendUrl"]}{x.ImageUrl}",
-        });
+        return Ok(productService.Get().Select(x => ProductMapper.MapToViewModel(x, configuration)));
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
     public IActionResult Get(long id)
     {
         Product? product = productService.GetById(id);
@@ -42,26 +40,7 @@ public class ProductController(
             return NotFound();
         }
 
-        ProductViewModel productViewModel = new()
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            ImageUrl = product.ImageIsExternal ? product.ImageUrl : $"{configuration["BackendUrl"]}{product.ImageUrl}",
-            Category = product.Category == null
-                ? null
-                : new CategoryViewModel
-                {
-                    Id = product.Category.Id,
-                    Name = product.Category.Name,
-                },
-            Auctions = product.Auctions.Select(a => new AuctionViewModel
-            {
-                Id = a.Id,
-                StartDateTime = a.StartDateTime,
-                DurationInSeconds = a.DurationInSeconds,
-            }).ToList(),
-        };
+        ProductViewModel productViewModel = ProductMapper.MapToViewModel(product, configuration);
 
         return Ok(productViewModel);
     }
@@ -69,6 +48,8 @@ public class ProductController(
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Post([FromForm] ProductCreateRequest productCreateRequest)
     {
         ValidationResult result = await createValidator.ValidateAsync(productCreateRequest);
@@ -90,14 +71,21 @@ public class ProductController(
             CategoryId = productCreateRequest.CategoryId ?? 0,
         };
 
-        productService.Create(product);
+        Product? createdProduct = productService.Create(product);
+        if (createdProduct == null)
+        {
+            return BadRequest(new { Message = "Product could not be created" });
+        }
 
-        return NoContent();
+        return CreatedAtAction("Get", new { id = product.Id }, ProductMapper.MapToViewModel(createdProduct, configuration));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     [Consumes("multipart/form-data")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Put(int id, [FromForm] ProductUpdateRequest productUpdateRequest)
     {
         Product? product = productService.GetById(id);
@@ -136,6 +124,8 @@ public class ProductController(
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
     public IActionResult Delete(int id)
     {
         if (!productService.Exists(id))

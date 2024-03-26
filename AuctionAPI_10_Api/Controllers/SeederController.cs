@@ -8,6 +8,7 @@ namespace AuctionAPI_10_Api.Controllers;
 public class SeederController(DataContext dbContext) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(204)]
     public async Task<IActionResult> Seed()
     {
         await new SeedData(dbContext).ResetDatabaseAndSeed();

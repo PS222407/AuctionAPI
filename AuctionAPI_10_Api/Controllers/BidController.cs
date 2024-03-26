@@ -21,6 +21,8 @@ public class BidController(
 {
     [Authorize]
     [HttpPost]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(204)]
     public async Task<IActionResult> Post([FromBody] BidRequest bidRequest)
     {
         ValidationResult result = await validator.ValidateAsync(bidRequest);

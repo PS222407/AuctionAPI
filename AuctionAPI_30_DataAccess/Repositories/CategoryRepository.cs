@@ -12,10 +12,10 @@ public class CategoryRepository(DataContext dbContext) : ICategoryRepository
         return dbContext.Categories.ToList();
     }
 
-    public bool Create(Category category)
+    public Category? Create(Category category)
     {
         dbContext.Categories.Add(category);
-        return dbContext.SaveChanges() > 0;
+        return dbContext.SaveChanges() <= 0 ? null : category;
     }
 
     public Category? GetById(long id)

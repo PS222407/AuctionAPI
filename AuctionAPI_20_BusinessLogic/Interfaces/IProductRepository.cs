@@ -6,7 +6,7 @@ public interface IProductRepository
 {
     public List<Product> Get();
 
-    public bool Create(Product product);
+    public Product? Create(Product product);
 
     public Product? GetById(long id);
 
