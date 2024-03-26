@@ -77,7 +77,8 @@ public class ProductController(
             return BadRequest(new { Message = "Product could not be created" });
         }
 
-        return CreatedAtAction("Get", new { id = product.Id }, ProductMapper.MapToViewModel(createdProduct, configuration));
+        return CreatedAtAction("Get", new { id = product.Id },
+            ProductMapper.MapToViewModel(createdProduct, configuration));
     }
 
     [Authorize(Roles = "Admin")]
