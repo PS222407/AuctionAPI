@@ -25,13 +25,13 @@ jobs:
     - name: Restore
       run: dotnet restore
       
-    # - name : coverlet
-    #   uses: b3b00/coverlet-action@1.2.5
-    #   with:
-    #     testProject: 'UnitTests/UnitTests.csproj'
-    #     output: 'lcov.info'
-    #     outputFormat: 'lcov'
-    #     excludes: '[program]*,[test]test.*'
+    - name : coverlet
+      uses: b3b00/coverlet-action@1.2.5
+      with:
+        testProject: 'UnitTests/UnitTests.csproj'
+        output: 'lcov.info'
+        outputFormat: 'lcov'
+        excludes: '[program]*,[test]test.*'
 
     - name: Check if lcov.info exists and has content
       run: |
@@ -41,6 +41,9 @@ jobs:
           echo "Error: lcov.info does not exist or is empty"
           exit 1
         fi
+
+    - name: Print lcov.info contents
+      run: cat "${{ github.workspace }}/UnitTests/lcov.info"
         
     - name: coveralls      
       uses: coverallsapp/github-action@v1.1.1
