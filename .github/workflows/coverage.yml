@@ -17,24 +17,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-
-    # - name: Save coverage report as artifact
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: coverage-report
-    #     path: README.md
-
-    # - name: mmdddmm
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: mmmdddm
-    #     path: UnitTests/BidServiceTests.cs
-
-    # - name: mmmm
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: mmmm
-    #     path: UnitTests/lcov.info
       
     - name: Setup .NET
       id: setup-dotnet
@@ -51,24 +33,10 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: coverage-report
-        path: UnitTests/TestResults/**
-      
-    # - name : coverlet
-    #   uses: b3b00/coverlet-action@1.2.5
-    #   with:
-    #     testProject: 'UnitTests/UnitTests.csproj'
-    #     output: 'lcov.info'
-    #     outputFormat: 'lcov'
-    #     excludes: '[program]*,[test]test.*'
-
-    # - name: Archive code coverage results
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: code-coverage-report
-    #     path: UnitTests/lcov.info
+        path: UnitTests/TestResults/*/coverage.cobertura.xml
         
-    # - name: coveralls      
-    #   uses: coverallsapp/github-action@v1.1.1
-    #   with:
-    #     github-token: ${{secrets.GITHUB_TOKEN }} 
-    #     path-to-lcov: ${{ github.workspace }}/AuctionAPI/UnitTests/lcov.info
+    - name: coveralls      
+      uses: coverallsapp/github-action@v1.1.1
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN }} 
+        path-to-lcov: ${{ github.workspace }}/UnitTests/TestResults/*/coverage.cobertura.xml
