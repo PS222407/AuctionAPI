@@ -1,28 +1,28 @@
-name: .NET
+name: ReSharper
 
 on:
-  pull_request:
-    branches:
-      - master
-      - develop
+    pull_request:
+        branches:
+            - master
+            - develop
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Setup .NET
-      id: setup-dotnet
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-    - name: Restore
-      run: dotnet restore
-    - name: ReSharper CLI InspectCode
-      uses: muno92/resharper_inspectcode@1.6.0
-      with:
-        solutionPath: ./AuctionAPI.sln
-        minimumSeverity: 'error'
+    build:
+        
+        runs-on: ubuntu-latest
+        
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup .NET
+                id: setup-dotnet
+                uses: actions/setup-dotnet@v3
+                with:
+                    dotnet-version: '8.0.x'
+            -   name: Restore
+                run: dotnet restore
+            -   name: ReSharper CLI InspectCode
+                uses: muno92/resharper_inspectcode@1.6.0
+                with:
+                    solutionPath: ./AuctionAPI.sln
+                    minimumSeverity: 'error'
