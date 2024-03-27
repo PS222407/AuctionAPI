@@ -32,7 +32,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: coverage-report
-        path: AuctionAPI/UnitTests/TestResults
+        path: AuctionAPI/UnitTests/TestResults/**
       
     # - name : coverlet
     #   uses: b3b00/coverlet-action@1.2.5
