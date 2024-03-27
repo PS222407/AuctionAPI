@@ -18,40 +18,40 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Save coverage report as artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage-report
-        path: README.md
-
-    - name: mmdddmm
-      uses: actions/upload-artifact@v2
-      with:
-        name: mmmdddm
-        path: UnitTests/BidServiceTests.cs
-
-    - name: mmmm
-      uses: actions/upload-artifact@v2
-      with:
-        name: mmmm
-        path: UnitTests/lcov.info
-      
-    # - name: Setup .NET
-    #   id: setup-dotnet
-    #   uses: actions/setup-dotnet@v3
-    #   with:
-    #     dotnet-version: '8.0.x'
-    # - name: Restore
-    #   run: dotnet restore
-
-    # - name: Build and run tests with Coverlet
-    #   run: dotnet test --collect:"XPlat Code Coverage"
-
     # - name: Save coverage report as artifact
     #   uses: actions/upload-artifact@v2
     #   with:
     #     name: coverage-report
-    #     path: AuctionAPI/UnitTests/TestResults/**
+    #     path: README.md
+
+    # - name: mmdddmm
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: mmmdddm
+    #     path: UnitTests/BidServiceTests.cs
+
+    # - name: mmmm
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: mmmm
+    #     path: UnitTests/lcov.info
+      
+    - name: Setup .NET
+      id: setup-dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build and run tests with Coverlet
+      run: dotnet test --collect:"XPlat Code Coverage"
+
+    - name: Save coverage report as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: UnitTests/TestResults/**
       
     # - name : coverlet
     #   uses: b3b00/coverlet-action@1.2.5
@@ -65,7 +65,7 @@ jobs:
     #   uses: actions/upload-artifact@v4
     #   with:
     #     name: code-coverage-report
-    #     path: AuctionAPI/UnitTests/lcov.info
+    #     path: UnitTests/lcov.info
         
     # - name: coveralls      
     #   uses: coverallsapp/github-action@v1.1.1
