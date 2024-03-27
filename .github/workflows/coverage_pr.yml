@@ -1,10 +1,9 @@
 name: .NET
 
 on:
-    pull_request:
+    push:
         branches:
-            - master
-            - develop
+            - coverage
 
 jobs:
     build:
@@ -40,7 +39,7 @@ jobs:
                 with:
                     reports: ./coverage/coverage.cobertura.xml
                     targetdir: 'coveragereport'
-                    reporttypes: 'HtmlInline;Cobertura'
+                    reporttypes: 'HtmlInline;MarkdownSummaryGithub'
                     verbosity: 'Info'
                     title: 'AuctionAPI Coverage Report'
                     tag: '${{ github.run_number }}_${{ github.run_id }}'
@@ -51,3 +50,13 @@ jobs:
                 with:
                     name: CoverageReport
                     path: coveragereport
+
+            -   name: Add Coverage PR Comment
+                uses: marocchino/sticky-pull-request-comment@v2
+                if: github.event_name == 'pull_request'
+                with:
+                    recreate: true
+                    path: ./coveragereport/SummaryGithub.md
+
+            -   name: Write to Job Summary
+                run: cat ./coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
