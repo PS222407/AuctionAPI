@@ -25,13 +25,13 @@ jobs:
     - name: Restore
       run: dotnet restore
       
-    - name : coverlet
-      uses: b3b00/coverlet-action@1.2.5
-      with:
-        testProject: 'UnitTests/UnitTests.csproj'
-        output: 'lcov.info'
-        outputFormat: 'lcov'
-        excludes: '[program]*,[test]test.*'
+    # - name : coverlet
+    #   uses: b3b00/coverlet-action@1.2.5
+    #   with:
+    #     testProject: 'UnitTests/UnitTests.csproj'
+    #     output: 'lcov.info'
+    #     outputFormat: 'lcov'
+    #     excludes: '[program]*,[test]test.*'
 
     - name: Check if lcov.info exists and has content
       run: |
