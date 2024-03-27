@@ -1,4 +1,4 @@
-name: .NET
+name: ReSharper
 
 on:
     pull_request:
