@@ -22,8 +22,11 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-    - name: Restore
+    - name: Restore dependencies
       run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore
       
     # Add coverlet.collector nuget package to test project - 'dotnet add <TestProject.cspoj> package coverlet
     - name: Test
