@@ -1,0 +1,35 @@
+name: .NET
+
+on:
+  push:
+    branches:
+      - coverage
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup .NET
+      id: setup-dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore
+      run: dotnet restore
+      
+    - name: coverage
+      uses: b3b00/coverlet-action@1.2.5
+      with:
+        testProject: 'UnitTests/UnitTests.csproj'
+        output: 'coverage.cobertura.xml'
+        outputFormat: 'cobertura'
+        excludes: '[program]*,[test]test.*'
+        threshold: 80
