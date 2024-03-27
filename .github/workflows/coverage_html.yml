@@ -42,8 +42,8 @@ jobs:
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
       with:
         reports: ./coverage/coverage.cobertura.xml
-        targetdir: ./coverage
-        reporttypes: 'HtmlInline;'
+        targetdir: 'coveragereport'
+        reporttypes: 'HtmlInline;Cobertura'
         verbosity: 'Info'
         title: 'AuctionAPI Coverage Report'
         tag: '${{ github.run_number }}_${{ github.run_id }}'
