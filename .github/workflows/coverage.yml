@@ -24,23 +24,32 @@ jobs:
         dotnet-version: '8.0.x'
     - name: Restore
       run: dotnet restore
-      
-    - name : coverlet
-      uses: b3b00/coverlet-action@1.2.5
-      with:
-        testProject: 'UnitTests/UnitTests.csproj'
-        output: 'lcov.info'
-        outputFormat: 'lcov'
-        excludes: '[program]*,[test]test.*'
 
-    - name: Archive code coverage results
-      uses: actions/upload-artifact@v4
+    - name: Build and run tests with Coverlet
+      run: dotnet test --collect:"XPlat Code Coverage"
+
+    - name: Save coverage report as artifact
+      uses: actions/upload-artifact@v2
       with:
-        name: code-coverage-report
-        path: AuctionAPI/UnitTests/lcov.info
+        name: coverage-report
+        path: AuctionAPI/UnitTests/TestResults
+      
+    # - name : coverlet
+    #   uses: b3b00/coverlet-action@1.2.5
+    #   with:
+    #     testProject: 'UnitTests/UnitTests.csproj'
+    #     output: 'lcov.info'
+    #     outputFormat: 'lcov'
+    #     excludes: '[program]*,[test]test.*'
+
+    # - name: Archive code coverage results
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: code-coverage-report
+    #     path: AuctionAPI/UnitTests/lcov.info
         
-    - name: coveralls      
-      uses: coverallsapp/github-action@v1.1.1
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN }} 
-        path-to-lcov: ${{ github.workspace }}/AuctionAPI/UnitTests/lcov.info
+    # - name: coveralls      
+    #   uses: coverallsapp/github-action@v1.1.1
+    #   with:
+    #     github-token: ${{secrets.GITHUB_TOKEN }} 
+    #     path-to-lcov: ${{ github.workspace }}/AuctionAPI/UnitTests/lcov.info
