@@ -25,28 +25,24 @@ jobs:
     - name: Restore
       run: dotnet restore
       
-    - name : coverlet
-      uses: b3b00/coverlet-action@1.2.5
-      with:
-        testProject: 'UnitTests/UnitTests.csproj'
-        output: 'lcov.info'
-        outputFormat: 'lcov'
-        excludes: '[program]*,[test]test.*'
+    # Add coverlet.collector nuget package to test project - 'dotnet add <TestProject.cspoj> package coverlet
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
 
-    - name: Check if lcov.info exists and has content
-      run: |
-        if [ -s "${{ github.workspace }}/UnitTests/lcov.info" ]; then
-          echo "lcov.info exists and is not empty"
-        else
-          echo "Error: lcov.info does not exist or is empty"
-          exit 1
-        fi
-
-    - name: Print lcov.info contents
-      run: cat "${{ github.workspace }}/UnitTests/lcov.info"
-        
-    - name: coveralls      
-      uses: coverallsapp/github-action@v1.1.1
+    - name: Code Coverage Summary Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        github-token: ${{secrets.GITHUB_TOKEN }} 
-        path-to-lcov: ${{ github.workspace }}/UnitTests/lcov.info
+        filename: 'coverage/*/coverage.cobertura.xml'
+        badge: true
+        format: 'markdown'
+        output: 'both'
+
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: code-coverage-results.md
+
+    - name: Write to Job Summary
+      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
