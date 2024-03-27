@@ -29,9 +29,15 @@ jobs:
       uses: b3b00/coverlet-action@1.2.5
       with:
         testProject: 'UnitTests/UnitTests.csproj'
-        output: 'lcov.info'
+        output: 'coverage/'
         outputFormat: 'lcov'
         excludes: '[program]*,[test]test.*'
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage-report
+        path: AuctionAPI/UnitTests/coverage
         
     - name: coveralls      
       uses: coverallsapp/github-action@v1.1.1
