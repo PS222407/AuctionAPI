@@ -25,15 +25,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - name: Build and run tests with Coverlet
-      run: dotnet test --collect:"XPlat Code Coverage"
-
-    - name: Save coverage report as artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage-report
-        path: UnitTests/TestResults/*/coverage.cobertura.xml
-
     - name: Convert Coverage to LCOV
       run: dotnet tool install --global coverlet.console
     - run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format lcov --targetargs "test . --no-build" --output ./coverage/lcov.info
