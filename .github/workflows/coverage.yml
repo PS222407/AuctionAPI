@@ -29,7 +29,7 @@ jobs:
       uses: b3b00/coverlet-action@1.2.5
       with:
         testProject: 'UnitTests/UnitTests.csproj'
-        output: 'coverage/'
+        output: 'lcov.info'
         outputFormat: 'lcov'
         excludes: '[program]*,[test]test.*'
 
@@ -37,7 +37,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: code-coverage-report
-        path: AuctionAPI/UnitTests/coverage
+        path: AuctionAPI/UnitTests/lcov.info
         
     - name: coveralls      
       uses: coverallsapp/github-action@v1.1.1
