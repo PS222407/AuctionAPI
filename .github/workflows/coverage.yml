@@ -1,9 +1,6 @@
 name: .NET
 
 on:
-  push:
-    branches:
-      - coverage
   pull_request:
     branches:
       - master
