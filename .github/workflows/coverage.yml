@@ -47,8 +47,8 @@ jobs:
         name: coverage-report-lcov
         path: ./coverage/lcov.info
         
-    # - name: coveralls      
-    #   uses: coverallsapp/github-action@v1.1.1
-    #   with:
-    #     github-token: ${{secrets.GITHUB_TOKEN }} 
-    #     path-to-lcov: ${{ github.workspace }}/UnitTests/TestResults/*/coverage.cobertura.xml
+    - name: coveralls      
+      uses: coverallsapp/github-action@v1.1.1
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN }} 
+        path-to-lcov: ./coverage/lcov.info
