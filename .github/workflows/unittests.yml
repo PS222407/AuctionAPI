@@ -1,6 +1,9 @@
 name: UnitTests
 
 on:
+    push: 
+        branches:
+            - IntegrationTests
     pull_request:
         branches:
             - master
