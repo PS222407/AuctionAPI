@@ -16,6 +16,10 @@ jobs:
         
         steps:
             -   uses: actions/checkout@v3
+            -   name: Create Database
+                run: |
+                    sudo systemctl start mysql
+                    mysql --user="root" --password="example" -e "CREATE DATABASE \`auctionapi\` character set UTF8mb4 collate utf8mb4_bin;"
             -   name: Setup .NET
                 uses: actions/setup-dotnet@v3
                 with:
@@ -23,6 +27,6 @@ jobs:
             -   name: Restore dependencies
                 run: dotnet restore
             -   name: Build
-                run: dotnet build --no-restore
+                run: dotnet build --no-restore              
             -   name: Test
                 run: dotnet test --no-build --verbosity normal
