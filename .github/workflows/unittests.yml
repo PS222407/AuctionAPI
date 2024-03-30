@@ -14,14 +14,11 @@ jobs:
         
         runs-on: ubuntu-latest
         
+        env:
+            "ConnectionStrings__DefaultConnection": "Server=127.0.0.1;Port=3306;Database=test;User ID=root;Password=root;"
+        
         steps:
             -   uses: actions/checkout@v3
-#            -   name: Setup MySQL
-#                run: |
-#                    sudo apt-get update
-#                    sudo apt-get install mysql-server -y
-#                    sudo mysql -e "ALTER
-
             -   name: Create Database
                 run: |
                     sudo systemctl start mysql
