@@ -13,10 +13,18 @@ jobs:
         
         runs-on: ubuntu-latest
         
+        env:
+            ConnectionStrings__DefaultConnection: "Server=127.0.0.1;Port=3306;Database=test;User ID=root;Password=root;"
+        
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
-
+                
+            -   name: Create Database
+                run: |
+                    sudo systemctl start mysql
+                    mysql --user="root" --password="root" -e "CREATE DATABASE \`test\` character set UTF8mb4 collate utf8mb4_bin;"
+            
             -   name: Setup .NET
                 id: setup-dotnet
                 uses: actions/setup-dotnet@v3

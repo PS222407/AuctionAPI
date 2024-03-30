@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         
         env:
-            "ConnectionStrings__DefaultConnection": "Server=127.0.0.1;Port=3306;Database=test;User ID=root;Password=root;"
+            ConnectionStrings__DefaultConnection: "Server=127.0.0.1;Port=3306;Database=test;User ID=root;Password=root;"
         
         steps:
             -   uses: actions/checkout@v3
