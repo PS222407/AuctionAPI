@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionAPI_30_DataAccess", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{2CF2C7D7-A71B-4C00-BF2B-7B12167D555C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{62F4E9CD-0D45-48F8-B285-81C210D88A8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{2CF2C7D7-A71B-4C00-BF2B-7B12167D555C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CF2C7D7-A71B-4C00-BF2B-7B12167D555C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CF2C7D7-A71B-4C00-BF2B-7B12167D555C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62F4E9CD-0D45-48F8-B285-81C210D88A8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62F4E9CD-0D45-48F8-B285-81C210D88A8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62F4E9CD-0D45-48F8-B285-81C210D88A8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62F4E9CD-0D45-48F8-B285-81C210D88A8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
