@@ -42,10 +42,10 @@ jobs:
                 run: dotnet tool install --global coverlet.console
 
             -   name: Run tests and generate UnitTest Cobertura and LCOV coverage report
-                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format cobertura --format lcov --targetargs "test . --no-build" --output ./unittests_coverage/
+                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format cobertura --format lcov --targetargs "test . --no-build" --output ./coverage_unittests/
 
             -   name: Run tests and generate IntegrationTest Cobertura and LCOV coverage report
-                run: coverlet ./IntegrationTests/bin/Debug/net8.0/IntegrationTests.dll --target "dotnet" --format cobertura --format lcov --targetargs "test . --no-build" --output ./integrationtests_coverage/
+                run: coverlet ./IntegrationTests/bin/Debug/net8.0/IntegrationTests.dll --target "dotnet" --format cobertura --format lcov --targetargs "test . --no-build" --output ./coverage_integrationtests/
 
             # -   name: Html and markdown report
             #     uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
@@ -64,11 +64,17 @@ jobs:
             #         name: html-markdown-coverage-report
             #         path: coveragereport
                     
-            -   name: Save coverage reports as artifact
+            -   name: Save unittest coverage reports as artifact
                 uses: actions/upload-artifact@v4
                 with:
-                    name: lcov-coverage-report
-                    path: ./coverage
+                    name: unittest-coverage-report
+                    path: ./coverage_unittests
+            
+            -   name: Save integrationtest coverage reports as artifact
+                uses: actions/upload-artifact@v4
+                with:
+                    name: integrationtest-coverage-report
+                    path: ./coverage_integrationtests
 
             # -   name: Add Coverage PR Comment
             #     uses: marocchino/sticky-pull-request-comment@v2
