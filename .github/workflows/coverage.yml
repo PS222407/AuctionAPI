@@ -3,6 +3,9 @@
 permissions:
     pull-requests: write
 on:
+    push:
+        branches:
+            - develop
     pull_request:
         branches:
             - master
@@ -38,47 +41,47 @@ jobs:
             -   name: Install coverlet
                 run: dotnet tool install --global coverlet.console
 
-            -   name: Run tests and generate Cobertura coverage report
-                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format cobertura --targetargs "test . --no-build" --output ./coverage/coverage.cobertura.xml
-                
-            -   name: Run tests and generate LCOV coverage report
-                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format lcov --targetargs "test . --no-build" --output ./coverage/lcov.info
+            -   name: Run tests and generate UnitTest Cobertura and LCOV coverage report
+                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format cobertura --format lcov --targetargs "test . --no-build" --output ./unittests_coverage/
 
-            -   name: Html and markdown report
-                uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
-                with:
-                    reports: ./coverage/coverage.cobertura.xml
-                    targetdir: 'coveragereport'
-                    reporttypes: 'HtmlInline;MarkdownSummaryGithub;Cobertura'
-                    verbosity: 'Info'
-                    title: 'AuctionAPI Coverage Report'
-                    tag: '${{ github.run_number }}_${{ github.run_id }}'
-                    toolpath: 'reportgeneratortool'
+            -   name: Run tests and generate IntegrationTest Cobertura and LCOV coverage report
+                run: coverlet ./IntegrationTests/bin/Debug/net8.0/IntegrationTests.dll --target "dotnet" --format cobertura --format lcov --targetargs "test . --no-build" --output ./integrationtests_coverage/
 
-            -   name: Save html and markdown report artifact
-                uses: actions/upload-artifact@v2.2.3
-                with:
-                    name: html-markdown-coverage-report
-                    path: coveragereport
+            # -   name: Html and markdown report
+            #     uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
+            #     with:
+            #         reports: './coverage/coverage.cobertura.xml;./coverage/integration_coverage.cobertura.xml'
+            #         targetdir: 'coveragereport'
+            #         reporttypes: 'HtmlInline;MarkdownSummaryGithub;Cobertura'
+            #         verbosity: 'Info'
+            #         title: 'AuctionAPI Coverage Report'
+            #         tag: '${{ github.run_number }}_${{ github.run_id }}'
+            #         toolpath: 'reportgeneratortool'
+
+            # -   name: Save html and markdown report artifact
+            #     uses: actions/upload-artifact@v2.2.3
+            #     with:
+            #         name: html-markdown-coverage-report
+            #         path: coveragereport
                     
-            -   name: Save lcov coverage report as artifact
-                uses: actions/upload-artifact@v2
+            -   name: Save coverage reports as artifact
+                uses: actions/upload-artifact@v4
                 with:
                     name: lcov-coverage-report
-                    path: ./coverage/lcov.info
+                    path: ./coverage
 
-            -   name: Add Coverage PR Comment
-                uses: marocchino/sticky-pull-request-comment@v2
-                if: github.event_name == 'pull_request'
-                with:
-                    header: Coverage Report
-                    path: ./coveragereport/SummaryGithub.md
+            # -   name: Add Coverage PR Comment
+            #     uses: marocchino/sticky-pull-request-comment@v2
+            #     if: github.event_name == 'pull_request'
+            #     with:
+            #         header: Coverage Report
+            #         path: ./coveragereport/SummaryGithub.md
 
-            -   name: Write to Job Summary
-                run: cat ./coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+            # -   name: Write to Job Summary
+            #     run: cat ./coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
                 
-            -   name: coveralls
-                uses: coverallsapp/github-action@v1.1.1
-                with:
-                    github-token: ${{secrets.GITHUB_TOKEN }}
-                    path-to-lcov: ./coverage/lcov.info
+            # -   name: coveralls
+            #     uses: coverallsapp/github-action@v1.1.1
+            #     with:
+            #         github-token: ${{secrets.GITHUB_TOKEN }}
+            #         path-to-lcov: ./coverage/lcov.info
