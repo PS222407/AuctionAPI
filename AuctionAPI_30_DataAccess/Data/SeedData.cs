@@ -167,21 +167,28 @@ public class SeedData(DataContext dbContext)
                 Id = 1,
                 ProductId = 1,
                 StartDateTime = DateTime.Parse("2023-09-01T12:00:00"),
-                DurationInSeconds = 3600,
+                DurationInSeconds = 14400,
             },
             new Auction
             {
                 Id = 2,
                 ProductId = 2,
                 StartDateTime = DateTime.Parse("2023-09-01T12:00:00"),
-                DurationInSeconds = 3600,
+                DurationInSeconds = 14400,
             },
             new Auction
             {
                 Id = 3,
                 ProductId = 3,
                 StartDateTime = DateTime.Parse("2023-09-01T12:00:00"),
-                DurationInSeconds = 3600,
+                DurationInSeconds = 14400,
+            },
+            new Auction
+            {
+                Id = 4,
+                ProductId = 3,
+                StartDateTime = DateTime.Now.Subtract(TimeSpan.FromMinutes(10)),
+                DurationInSeconds = 14400,
             }
         );
     }
