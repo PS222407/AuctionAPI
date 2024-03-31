@@ -43,8 +43,8 @@ jobs:
                     dotnet test --collect:"XPlat Code Coverage" --results-directory:"xplat"
                     mkdir -p coverage/1
                     mkdir -p coverage/2
-                    mv ./xplat/*/coverage.cobertura.xml ./coverage/1
-                    mv ./xplat/*/coverage.cobertura.xml ./coverage/2
+                    mv ./xplat/*/coverage.cobertura.xml ./coverage/1 2>/dev/null || true
+                    mv ./xplat/*/coverage.cobertura.xml ./coverage/2 2>/dev/null || true
 
             -   name: Save coverage artifact
                 uses: actions/upload-artifact@v4
