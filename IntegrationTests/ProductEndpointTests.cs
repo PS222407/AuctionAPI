@@ -51,7 +51,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PostProduct_ShouldReturn201()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
@@ -72,7 +73,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PostProduct_InvalidBody_ShouldReturn400()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
@@ -92,7 +94,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PostProduct_CategoryNotFound_ShouldReturn400()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
@@ -113,7 +116,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PutProduct_ShouldReturn204()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
@@ -134,7 +138,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PutProduct_ProductDoesNotExist_ShouldReturn404()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
@@ -155,7 +160,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PutProduct_InvalidBody_ShouldReturn400()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
@@ -175,7 +181,8 @@ public class ProductEndpointTests : IntegrationTestFixture
     [Test]
     public async Task PutProduct_CategoryNotFound_ShouldReturn400()
     {
-        string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+        string currentDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
         string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
