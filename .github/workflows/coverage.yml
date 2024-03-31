@@ -3,6 +3,10 @@
 permissions:
     pull-requests: write
 on:
+    push: 
+        branches:
+            - master
+            - develop
     pull_request:
         branches:
             - master
