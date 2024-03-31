@@ -31,7 +31,7 @@ public class UserServiceTests
                 a__id = 1,
                 a__ProductId = 1,
                 a__StartDateTime = now,
-                a__DurationInSeconds = 7200,
+                a__DurationInSeconds = 14400,
                 p__Id = 1,
                 p__Name = "Product 1",
                 p__Description = "Product 1 Description",
@@ -70,7 +70,7 @@ public class UserServiceTests
                 Id = 1,
                 ProductId = 1,
                 StartDateTime = now,
-                DurationInSeconds = 7200,
+                DurationInSeconds = 14400,
                 Product = new Product
                 {
                     Id = 1,

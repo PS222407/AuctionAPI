@@ -27,7 +27,7 @@ public class BidServiceTests
         Bid bid = new() { AuctionId = 1, PriceInCents = 1000 };
         Auction auction = new()
         {
-            Id = 1, StartDateTime = DateTime.UtcNow, DurationInSeconds = 7200, Bids =
+            Id = 1, StartDateTime = DateTime.UtcNow, DurationInSeconds = 14400, Bids =
             [
                 new Bid { PriceInCents = 150 },
                 new Bid { PriceInCents = 300 },
@@ -75,7 +75,7 @@ public class BidServiceTests
         Bid bid = new() { AuctionId = 1, PriceInCents = 100 };
         Auction auction = new()
         {
-            Id = 1, StartDateTime = DateTime.UtcNow, DurationInSeconds = 7200, Bids =
+            Id = 1, StartDateTime = DateTime.UtcNow, DurationInSeconds = 14400, Bids =
             [
                 new Bid { PriceInCents = 150 },
                 new Bid { PriceInCents = 300 },

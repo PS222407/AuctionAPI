@@ -98,7 +98,7 @@ public class AuctionServiceTests
     public void IsRunning_ShouldReturnTrue()
     {
         // Arrange
-        Auction auction = new() { Id = 1, StartDateTime = DateTime.UtcNow, DurationInSeconds = 7200 };
+        Auction auction = new() { Id = 1, StartDateTime = DateTime.UtcNow, DurationInSeconds = 14400 };
         _auctionRepositoryMock.Setup(x => x.GetById(1))
             .Returns(auction);
 
