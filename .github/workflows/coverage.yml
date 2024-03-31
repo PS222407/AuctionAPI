@@ -35,19 +35,18 @@ jobs:
             -   name: Build
                 run: dotnet build --no-restore
 
-            -   name: Install coverlet
-                run: dotnet tool install --global coverlet.console
-
-            -   name: Run tests and generate Cobertura coverage report
-                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format cobertura --targetargs "test . --no-build" --output ./coverage/coverage.cobertura.xml
-                
-            -   name: Run tests and generate LCOV coverage report
-                run: coverlet ./UnitTests/bin/Debug/net8.0/UnitTests.dll --target "dotnet" --format lcov --targetargs "test . --no-build" --output ./coverage/lcov.info
+            -   name: Run tests and generate coverage reports
+                run: |
+                    dotnet test --collect:"XPlat Code Coverage" --results-directory:"xplat"
+                    mkdir -p coverage/1
+                    mkdir -p coverage/2
+                    mv ./xplat/*/coverage.cobertura.xml ./coverage/1 2>/dev/null || true
+                    mv ./xplat/*/coverage.cobertura.xml ./coverage/2 2>/dev/null || true
 
             -   name: Html and markdown report
                 uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
                 with:
-                    reports: ./coverage/coverage.cobertura.xml
+                    reports: './coverage/1/coverage.cobertura.xml;./coverage/2/coverage.cobertura.xml'
                     targetdir: 'coveragereport'
                     reporttypes: 'HtmlInline;MarkdownSummaryGithub;Cobertura'
                     verbosity: 'Info'
@@ -56,19 +55,13 @@ jobs:
                     toolpath: 'reportgeneratortool'
 
             -   name: Save html and markdown report artifact
-                uses: actions/upload-artifact@v2.2.3
+                uses: actions/upload-artifact@v4
                 with:
                     name: html-markdown-coverage-report
                     path: coveragereport
-                    
-            -   name: Save lcov coverage report as artifact
-                uses: actions/upload-artifact@v2
-                with:
-                    name: lcov-coverage-report
-                    path: ./coverage/lcov.info
 
             -   name: Add Coverage PR Comment
-                uses: marocchino/sticky-pull-request-comment@v2
+                uses: marocchino/sticky-pull-request-comment@v2.9.0
                 if: github.event_name == 'pull_request'
                 with:
                     header: Coverage Report
@@ -78,7 +71,8 @@ jobs:
                 run: cat ./coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
                 
             -   name: coveralls
-                uses: coverallsapp/github-action@v1.1.1
+                uses: coverallsapp/github-action@v2.2.3
                 with:
                     github-token: ${{secrets.GITHUB_TOKEN }}
-                    path-to-lcov: ./coverage/lcov.info
+                    format: cobertura
+                    files: './coverage/1/coverage.cobertura.xml ./coverage/2/coverage.cobertura.xml'
