@@ -103,7 +103,7 @@ public class ProductController(
 
         if (!categoryService.Exists(productUpdateRequest.CategoryId ?? 0))
         {
-            return NotFound(new { Message = "Category not found" });
+            return BadRequest(new { Message = "Category not found" });
         }
 
         string imageUrl = product.ImageUrl;
