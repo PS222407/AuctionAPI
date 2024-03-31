@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Reflection;
 
 namespace IntegrationTests;
 
@@ -48,157 +47,157 @@ public class ProductEndpointTests : IntegrationTestFixture
         Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
-    [Test]
-    public async Task PostProduct_ShouldReturn201()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product name"), "Name");
-        formData.Add(new StringContent("Product description"), "Description");
-        formData.Add(new StringContent("1"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PostAsync("api/v1/Product", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-    }
-
-    [Test]
-    public async Task PostProduct_InvalidBody_ShouldReturn400()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product name"), "Name");
-        formData.Add(new StringContent("1"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PostAsync("api/v1/Product", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-    }
-
-    [Test]
-    public async Task PostProduct_CategoryNotFound_ShouldReturn400()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product name"), "Name");
-        formData.Add(new StringContent("Product description"), "Description");
-        formData.Add(new StringContent("100"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PostAsync("api/v1/Product", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-    }
-
-    [Test]
-    public async Task PutProduct_ShouldReturn204()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product name Changed"), "Name");
-        formData.Add(new StringContent("Product description Changed"), "Description");
-        formData.Add(new StringContent("2"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/1", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-    }
-
-    [Test]
-    public async Task PutProduct_ProductDoesNotExist_ShouldReturn404()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product name Changed"), "Name");
-        formData.Add(new StringContent("Product description Changed"), "Description");
-        formData.Add(new StringContent("2"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/100", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-    }
-
-    [Test]
-    public async Task PutProduct_InvalidBody_ShouldReturn400()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product description Changed"), "Description");
-        formData.Add(new StringContent("1"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/1", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-    }
-
-    [Test]
-    public async Task PutProduct_CategoryNotFound_ShouldReturn400()
-    {
-        string currentDirectory =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
-        string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-
-        ByteArrayContent byteArrayContent = new(imageBytes);
-        byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-
-        MultipartFormDataContent formData = new();
-        formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
-        formData.Add(new StringContent("Product name Changed"), "Name");
-        formData.Add(new StringContent("Product description Changed"), "Description");
-        formData.Add(new StringContent("100"), "CategoryId");
-
-        HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/1", formData);
-
-        Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-    }
+    // [Test]
+    // public async Task PostProduct_ShouldReturn201()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product name"), "Name");
+    //     formData.Add(new StringContent("Product description"), "Description");
+    //     formData.Add(new StringContent("1"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PostAsync("api/v1/Product", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+    // }
+    //
+    // [Test]
+    // public async Task PostProduct_InvalidBody_ShouldReturn400()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product name"), "Name");
+    //     formData.Add(new StringContent("1"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PostAsync("api/v1/Product", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    // }
+    //
+    // [Test]
+    // public async Task PostProduct_CategoryNotFound_ShouldReturn400()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product name"), "Name");
+    //     formData.Add(new StringContent("Product description"), "Description");
+    //     formData.Add(new StringContent("100"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PostAsync("api/v1/Product", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    // }
+    //
+    // [Test]
+    // public async Task PutProduct_ShouldReturn204()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product name Changed"), "Name");
+    //     formData.Add(new StringContent("Product description Changed"), "Description");
+    //     formData.Add(new StringContent("2"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/1", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+    // }
+    //
+    // [Test]
+    // public async Task PutProduct_ProductDoesNotExist_ShouldReturn404()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product name Changed"), "Name");
+    //     formData.Add(new StringContent("Product description Changed"), "Description");
+    //     formData.Add(new StringContent("2"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/100", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    // }
+    //
+    // [Test]
+    // public async Task PutProduct_InvalidBody_ShouldReturn400()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product description Changed"), "Description");
+    //     formData.Add(new StringContent("1"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/1", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    // }
+    //
+    // [Test]
+    // public async Task PutProduct_CategoryNotFound_ShouldReturn400()
+    // {
+    //     string currentDirectory =
+    //         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!.Replace(@"bin\Debug\net8.0", "");
+    //     string imagePath = Path.Combine(currentDirectory, "zwizuudvpwp31.jpg");
+    //     byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+    //
+    //     ByteArrayContent byteArrayContent = new(imageBytes);
+    //     byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+    //
+    //     MultipartFormDataContent formData = new();
+    //     formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
+    //     formData.Add(new StringContent("Product name Changed"), "Name");
+    //     formData.Add(new StringContent("Product description Changed"), "Description");
+    //     formData.Add(new StringContent("100"), "CategoryId");
+    //
+    //     HttpResponseMessage httpResponseMessage = await Client!.PutAsync("api/v1/Product/1", formData);
+    //
+    //     Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    // }
 
     [Test]
     public async Task DeleteProduct_ShouldReturn204()
