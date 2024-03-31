@@ -64,20 +64,20 @@ jobs:
                     name: html-markdown-coverage-report
                     path: coveragereport
                     
-            -   name: Save unittest coverage reports as artifact
-                uses: actions/upload-artifact@v4
-                with:
-                    name: unittest-coverage-report
-                    path: ./coverage_unittests
+            # -   name: Save unittest coverage reports as artifact
+            #     uses: actions/upload-artifact@v4
+            #     with:
+            #         name: unittest-coverage-report
+            #         path: ./coverage_unittests
             
-            -   name: Save integrationtest coverage reports as artifact
-                uses: actions/upload-artifact@v4
-                with:
-                    name: integrationtest-coverage-report
-                    path: ./coverage_integrationtests
+            # -   name: Save integrationtest coverage reports as artifact
+            #     uses: actions/upload-artifact@v4
+            #     with:
+            #         name: integrationtest-coverage-report
+            #         path: ./coverage_integrationtests
 
             -   name: Add Coverage PR Comment
-                uses: marocchino/sticky-pull-request-comment@v2
+                uses: marocchino/sticky-pull-request-comment@v2.9.0
                 if: github.event_name == 'pull_request'
                 with:
                     header: Coverage Report
@@ -86,8 +86,9 @@ jobs:
             -   name: Write to Job Summary
                 run: cat ./coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
                 
-            # -   name: coveralls
-            #     uses: coverallsapp/github-action@v1.1.1
-            #     with:
-            #         github-token: ${{secrets.GITHUB_TOKEN }}
-            #         path-to-lcov: ./coverage/lcov.info
+            -   name: coveralls
+                uses: coverallsapp/github-action@v2.2.3
+                with:
+                    github-token: ${{secrets.GITHUB_TOKEN }}
+                    format: cobertura
+                    files: './coverage_unittests/coverage.cobertura.xml ./coverage_integrationtests/coverage.cobertura.xml'
