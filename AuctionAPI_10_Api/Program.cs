@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using AuctionAPI_10_Api.Hub;
 using AuctionAPI_10_Api.Middleware;
@@ -30,6 +31,8 @@ builder.Services.AddScoped<IBidRepository, BidRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+ValidatorOptions.Global.LanguageManager = new CustomLanguageManager();
+ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 builder.Services.AddScoped<IValidator<BidRequest>, BidRequestValidator>();
 builder.Services.AddScoped<IValidator<AuctionRequest>, AuctionRequestValidator>();
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
