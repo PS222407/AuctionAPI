@@ -9,7 +9,7 @@ public class SeederController(DataContext dbContext) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> Seed()
+    public async Task<ActionResult> Seed()
     {
         await new SeedData(dbContext).ResetDatabaseAndSeed();
 

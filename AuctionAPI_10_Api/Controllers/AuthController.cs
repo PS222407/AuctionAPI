@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AuctionAPI_10_Api.RequestModels;
+using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Models;
 using AuctionAPI_30_DataAccess.Data;
 using FluentValidation;
@@ -25,7 +26,7 @@ public class AuthController(
     [HttpPost("Register")]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
-    public IActionResult Register([FromBody] UserRequest userRequest)
+    public ActionResult Register([FromBody] UserRequest userRequest)
     {
         ValidationResult result = userValidator.Validate(userRequest);
         if (!result.IsValid)
@@ -50,7 +51,7 @@ public class AuthController(
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public IActionResult Login([FromBody] UserRequest userRequest)
+    public ActionResult<RefreshTokenViewModel> Login([FromBody] UserRequest userRequest)
     {
         ValidationResult result = userValidator.Validate(userRequest);
         if (!result.IsValid)
@@ -89,7 +90,7 @@ public class AuthController(
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public IActionResult Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
+    public ActionResult<AccessTokenViewModel> Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
     {
         ValidationResult result = refreshTokenValidator.Validate(refreshTokenRequest);
         if (!result.IsValid)
