@@ -24,7 +24,7 @@ public class ProductController(
 {
     [HttpGet]
     [ProducesResponseType(200)]
-    public IActionResult Get()
+    public ActionResult<List<ProductViewModel>> Get()
     {
         return Ok(productService.Get().Select(x => ProductMapper.MapToViewModel(x, configuration)));
     }
@@ -32,7 +32,7 @@ public class ProductController(
     [HttpGet("{id:int}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
-    public IActionResult Get(long id)
+    public ActionResult<ProductViewModel> Get(long id)
     {
         Product? product = productService.GetById(id);
         if (product == null)
@@ -50,7 +50,7 @@ public class ProductController(
     [Consumes("multipart/form-data")]
     [ProducesResponseType(201)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> Post([FromForm] ProductCreateRequest productCreateRequest)
+    public async Task<ActionResult<ProductViewModel>> Post([FromForm] ProductCreateRequest productCreateRequest)
     {
         ValidationResult result = await createValidator.ValidateAsync(productCreateRequest);
         if (!result.IsValid)
@@ -87,7 +87,7 @@ public class ProductController(
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> Put(int id, [FromForm] ProductUpdateRequest productUpdateRequest)
+    public async Task<ActionResult> Put(int id, [FromForm] ProductUpdateRequest productUpdateRequest)
     {
         Product? product = productService.GetById(id);
         if (product == null)
@@ -127,7 +127,7 @@ public class ProductController(
     [HttpDelete("{id:int}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public IActionResult Delete(int id)
+    public ActionResult Delete(int id)
     {
         if (!productService.Exists(id))
         {

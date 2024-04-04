@@ -23,7 +23,7 @@ public class BidController(
     [HttpPost]
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> Post([FromBody] BidRequest bidRequest)
+    public async Task<ActionResult> Post([FromBody] BidRequest bidRequest)
     {
         ValidationResult result = await validator.ValidateAsync(bidRequest);
         if (!result.IsValid)

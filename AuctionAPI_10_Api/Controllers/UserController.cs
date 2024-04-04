@@ -13,7 +13,7 @@ public class UserController(IUserService userService, IConfiguration configurati
     [HttpGet("Auctions/Won")]
     [Authorize]
     [ProducesResponseType(200)]
-    public IActionResult GetWonAuctions()
+    public ActionResult<List<AuctionViewModel>> GetWonAuctions()
     {
         string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 

@@ -21,7 +21,7 @@ public class AuctionController(
 {
     [HttpGet]
     [ProducesResponseType(200)]
-    public IActionResult Get()
+    public ActionResult<List<AuctionViewModel>> Get()
     {
         return Ok(auctionService.Get().Select(a => AuctionMapper.MapToViewModel(a, configuration)));
     }
@@ -29,7 +29,7 @@ public class AuctionController(
     [HttpGet("{id:int}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
-    public IActionResult Get([FromRoute] int id)
+    public ActionResult<AuctionViewModel> Get([FromRoute] int id)
     {
         Auction? auction = auctionService.GetById(id);
         if (auction == null)
@@ -46,7 +46,7 @@ public class AuctionController(
     [HttpPost]
     [ProducesResponseType(201)]
     [ProducesResponseType(400)]
-    public IActionResult Post([FromBody] AuctionRequest auctionRequest)
+    public ActionResult<AuctionViewModel> Post([FromBody] AuctionRequest auctionRequest)
     {
         ValidationResult result = validator.Validate(auctionRequest);
         if (!result.IsValid)
@@ -81,7 +81,7 @@ public class AuctionController(
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]
-    public IActionResult Put([FromRoute] int id, [FromBody] AuctionRequest auctionRequest)
+    public ActionResult Put([FromRoute] int id, [FromBody] AuctionRequest auctionRequest)
     {
         if (!auctionService.Exists(id))
         {
@@ -116,7 +116,7 @@ public class AuctionController(
     [HttpDelete("{id:int}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public IActionResult Delete(int id)
+    public ActionResult Delete(int id)
     {
         if (!auctionService.Exists(id))
         {

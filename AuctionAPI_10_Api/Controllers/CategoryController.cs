@@ -19,7 +19,7 @@ public class CategoryController(
 {
     [HttpGet]
     [ProducesResponseType(200)]
-    public IActionResult Get()
+    public ActionResult<List<CategoryViewModel>> Get()
     {
         return Ok(categoryService.Get().Select(c => CategoryMapper.MapToViewModel(c, configuration)));
     }
@@ -27,7 +27,7 @@ public class CategoryController(
     [HttpGet("{id:int}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
-    public IActionResult Get(int id)
+    public ActionResult<CategoryViewModel> Get(int id)
     {
         Category? category = categoryService.GetById(id);
         if (category == null)
@@ -44,7 +44,7 @@ public class CategoryController(
     [HttpPost]
     [ProducesResponseType(201)]
     [ProducesResponseType(400)]
-    public IActionResult Post([FromBody] CategoryRequest categoryRequest)
+    public ActionResult<CategoryViewModel> Post([FromBody] CategoryRequest categoryRequest)
     {
         ValidationResult result = validator.Validate(categoryRequest);
         if (!result.IsValid)
@@ -73,7 +73,7 @@ public class CategoryController(
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public IActionResult Put(int id, [FromBody] CategoryRequest categoryRequest)
+    public ActionResult Put(int id, [FromBody] CategoryRequest categoryRequest)
     {
         if (!categoryService.Exists(id))
         {
@@ -102,7 +102,7 @@ public class CategoryController(
     [HttpDelete("{id:int}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public IActionResult Delete(int id)
+    public ActionResult Delete(int id)
     {
         if (!categoryService.Exists(id))
         {
