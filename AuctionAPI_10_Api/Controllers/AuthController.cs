@@ -58,7 +58,7 @@ public class AuthController(
             return BadRequest(new { result.Errors });
         }
 
-        User? user = context.Users.Include(u => u.Roles).FirstOrDefault(u => u.Email == userRequest.Email);
+        User? user = context.Users.Include(u => u.Roles).Include(user => user.RefreshTokens).FirstOrDefault(u => u.Email == userRequest.Email);
         if (user == null)
         {
             return Unauthorized();
@@ -70,6 +70,9 @@ public class AuthController(
         }
 
         RefreshToken refreshToken = GenerateRefreshToken();
+        context.RefreshTokens.RemoveRange(user.RefreshTokens);
+        context.SaveChanges();
+
         user.RefreshTokens.Add(refreshToken);
         context.SaveChanges();
 
@@ -103,18 +106,9 @@ public class AuthController(
             return Unauthorized();
         }
 
-        RefreshToken refreshToken = GenerateRefreshToken();
-        RefreshToken tokenToDelete = user.RefreshTokens.First(rt => rt.Token == refreshTokenRequest.RefreshToken);
-        context.RefreshTokens.Remove(tokenToDelete);
-        context.SaveChanges();
-
-        user.RefreshTokens.Add(refreshToken);
-        context.SaveChanges();
-
         return Ok(new
         {
             AccessToken = GenerateJwtToken(user),
-            RefreshToken = refreshToken.Token,
             TokenType = "Bearer",
             ExpiresIn = config.GetValue<int>("Jwt:ExpiresIn"),
         });
