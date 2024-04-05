@@ -103,6 +103,7 @@ public class SeedData(DataContext dbContext)
                 ImageUrl =
                     "https://www.ikea.com/nl/en/images/products/gamman-24-piece-cutlery-set-stainless-steel__0713267_pe729383_s5.jpg?f=s",
                 CategoryId = 1,
+                PriceInCents = 1212,
             },
             new Product
             {
@@ -113,6 +114,7 @@ public class SeedData(DataContext dbContext)
                 ImageUrl =
                     "https://cdn.webshopapp.com/shops/291748/files/339546304/1000x1000x2/combisteel-afzuigkap-compleet-met-motor-led-verlic.webp",
                 CategoryId = 1,
+                PriceInCents = 1212,
             },
             new Product
             {
@@ -122,6 +124,7 @@ public class SeedData(DataContext dbContext)
                 ImageUrl =
                     "https://cdn.webshopapp.com/shops/44056/files/334148720/890x820x2/fidget-fidget-spinner-classic-red.jpg",
                 CategoryId = 2,
+                PriceInCents = 1212,
             },
             new Product
             {
@@ -130,6 +133,7 @@ public class SeedData(DataContext dbContext)
                 ImageIsExternal = true,
                 ImageUrl = "https://image.smythstoys.com/original/desktop/197796_7.jpg",
                 CategoryId = 2,
+                PriceInCents = 1212,
             },
             new Product
             {
@@ -139,6 +143,7 @@ public class SeedData(DataContext dbContext)
                 ImageUrl =
                     "https://www.moulinex-me.com/medias/?context=bWFzdGVyfHJvb3R8MTQzNTExfGltYWdlL2pwZWd8aGNlL2hmZC8xNTk2ODYyNTc4NjkxMC5qcGd8MmYwYzQ4YTg0MTgzNmVjYTZkMWZkZWZmMDdlMWFlMjRhOGIxMTQ2MTZkNDk4ZDU3ZjlkNDk2MzMzNDA5OWY3OA",
                 CategoryId = 3,
+                PriceInCents = 1212,
             },
             new Product
             {
@@ -147,6 +152,7 @@ public class SeedData(DataContext dbContext)
                 ImageIsExternal = true,
                 ImageUrl = "https://www.outofhome-shops.nl/files/202202/dist/3d91e961ea0f0abc6ee29aabe8dddc10.jpg",
                 CategoryId = 3,
+                PriceInCents = 1212,
             },
             new Product
             {
@@ -155,6 +161,7 @@ public class SeedData(DataContext dbContext)
                 ImageIsExternal = true,
                 ImageUrl = "https://www.culy.nl/wp-content/uploads/2023/09/3_pasta-all-assassina-recept-1024x683.jpg",
                 CategoryId = 3,
+                PriceInCents = 1212,
             }
         );
     }
