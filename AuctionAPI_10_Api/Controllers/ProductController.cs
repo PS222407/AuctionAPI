@@ -66,6 +66,7 @@ public class ProductController(
         Product product = new()
         {
             Name = productCreateRequest.Name,
+            PriceInCents = productCreateRequest.PriceInCents.Value,
             Description = productCreateRequest.Description,
             ImageUrl = await FileService.SaveImageAsync(productCreateRequest.Image, webHostEnvironment) ?? "",
             CategoryId = productCreateRequest.CategoryId ?? 0,
@@ -113,6 +114,7 @@ public class ProductController(
         }
 
         product.Name = productUpdateRequest.Name;
+        product.PriceInCents = productUpdateRequest.PriceInCents.Value;
         product.Description = productUpdateRequest.Description;
         product.ImageUrl = imageUrl;
         product.CategoryId = productUpdateRequest.CategoryId ?? 0;
