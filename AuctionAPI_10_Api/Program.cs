@@ -5,6 +5,7 @@ using AuctionAPI_10_Api.Middleware;
 using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.Services;
 using AuctionAPI_10_Api.Validators;
+using AuctionAPI_20_BusinessLogic.Helpers;
 using AuctionAPI_20_BusinessLogic.Interfaces;
 using AuctionAPI_20_BusinessLogic.Services;
 using AuctionAPI_30_DataAccess.Data;
@@ -14,6 +15,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Mollie.Api;
+using Mollie.Api.Framework;
+using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -30,6 +34,13 @@ builder.Services.AddScoped<IBidService, BidService>();
 builder.Services.AddScoped<IBidRepository, BidRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IMollieHelper>(_ => new MollieHelper(
+    builder.Configuration.GetValue<string>("Mollie:ApiKey")!,
+    builder.Configuration.GetValue<string>("Mollie:RedirectUrl")!,
+    builder.Configuration.GetValue<string>("BackendUrl")!
+));
 
 ValidatorOptions.Global.LanguageManager = new CustomLanguageManager();
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
@@ -40,6 +51,7 @@ builder.Services.AddScoped<IValidator<ProductCreateRequest>, ProductCreateReques
 builder.Services.AddScoped<IValidator<ProductUpdateRequest>, ProductUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<UserRequest>, UserRequestValidator>();
 builder.Services.AddScoped<IValidator<RefreshTokenRequest>, RefreshTokenRequestValidator>();
+builder.Services.AddScoped<IValidator<OrderRequest>, OrderRequestValidator>();
 
 builder.Services.AddSignalR();
 
@@ -95,6 +107,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddMollieApi(options =>
+{
+    options.ApiKey = builder.Configuration["Mollie:ApiKey"];
+    options.RetryPolicy = MollieHttpRetryPolicies.TransientHttpErrorRetryPolicy();
+});
+
+Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().WriteTo
+    .File("logs/mollie-.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+
 WebApplication app = builder.Build();
 
 app.UseCors();
@@ -126,6 +147,4 @@ app.MapHub<MainHub>("/api/mainHub");
 
 app.Run();
 
-public partial class Program
-{
-}
+public partial class Program;
