@@ -6,6 +6,8 @@ public class Product
 
     public string Name { get; set; }
 
+    public int PriceInCents { get; set; }
+
     public string Description { get; set; }
 
     public bool ImageIsExternal { get; set; }
@@ -17,4 +19,6 @@ public class Product
     public Category? Category { get; set; }
 
     public List<Auction>? Auctions { get; set; }
+
+    public List<Order> Orders { get; set; }
 }
