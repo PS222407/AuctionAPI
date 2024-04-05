@@ -61,6 +61,7 @@ public class ProductEndpointTests : IntegrationTestFixture
         MultipartFormDataContent formData = new();
         formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
         formData.Add(new StringContent("Product name"), "Name");
+        formData.Add(new StringContent("1070"), "PriceInCents");
         formData.Add(new StringContent("Product description"), "Description");
         formData.Add(new StringContent("1"), "CategoryId");
 
@@ -123,6 +124,7 @@ public class ProductEndpointTests : IntegrationTestFixture
         MultipartFormDataContent formData = new();
         formData.Add(byteArrayContent, "Image", "zwizuudvpwp31.jpg");
         formData.Add(new StringContent("Product name Changed"), "Name");
+        formData.Add(new StringContent("1070"), "PriceInCents");
         formData.Add(new StringContent("Product description Changed"), "Description");
         formData.Add(new StringContent("2"), "CategoryId");
 
