@@ -21,6 +21,7 @@ public static class ProductMapper
         {
             Id = product.Id,
             Name = product.Name,
+            PriceInCents = product.PriceInCents,
             Description = product.Description,
             ImageUrl = product.ImageIsExternal ? product.ImageUrl : $"{configuration["BackendUrl"]}{product.ImageUrl}",
             Category = product.Category == null ? null : CategoryMapper.MapToViewModel(product.Category, configuration),

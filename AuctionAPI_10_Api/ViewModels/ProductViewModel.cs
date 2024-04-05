@@ -13,4 +13,6 @@ public class ProductViewModel
     public CategoryViewModel? Category { get; set; }
 
     public List<AuctionViewModel>? Auctions { get; set; }
+
+    public int PriceInCents { get; set; }
 }
