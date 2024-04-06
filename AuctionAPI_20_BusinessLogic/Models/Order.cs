@@ -14,7 +14,7 @@ public class Order
 
     public long ProductId { get; set; }
 
-    public Product Product { get; set; }
+    public Product? Product { get; set; }
 
     public int PriceInCents { get; set; }
 

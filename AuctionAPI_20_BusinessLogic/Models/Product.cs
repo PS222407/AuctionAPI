@@ -20,5 +20,5 @@ public class Product
 
     public List<Auction>? Auctions { get; set; }
 
-    public List<Order> Orders { get; set; }
+    public List<Order>? Orders { get; set; }
 }

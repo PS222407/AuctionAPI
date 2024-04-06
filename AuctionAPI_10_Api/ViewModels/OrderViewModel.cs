@@ -7,4 +7,6 @@ public class OrderViewModel
     public int PriceInCents { get; set; }
 
     public string PaymentStatus { get; set; }
+
+    public ProductViewModel? Product { get; set; }
 }
