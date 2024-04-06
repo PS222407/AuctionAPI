@@ -52,4 +52,9 @@ public class OrderService(IOrderRepository orderRepository, IMollieHelper mollie
     {
         return orderRepository.GetByExternalPaymentId(id);
     }
+
+    public List<Order> GetByUserId(string userId)
+    {
+        return orderRepository.GetByUserId(userId);
+    }
 }

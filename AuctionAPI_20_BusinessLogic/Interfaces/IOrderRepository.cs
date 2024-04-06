@@ -11,4 +11,6 @@ public interface IOrderRepository
     public bool Update(Order order);
 
     public Order? GetByExternalPaymentId(string id);
+
+    public List<Order> GetByUserId(string userId);
 }

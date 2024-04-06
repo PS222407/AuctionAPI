@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using AuctionAPI_10_Api.Mappers;
 using AuctionAPI_10_Api.RequestModels;
 using AuctionAPI_10_Api.ViewModels;
 using AuctionAPI_20_BusinessLogic.Exceptions;
@@ -21,7 +22,9 @@ namespace AuctionAPI_10_Api.Controllers;
 public class OrderController(
     IProductService productService,
     IOrderService orderService,
-    IValidator<OrderRequest> validator) : ControllerBase
+    IValidator<OrderRequest> validator,
+    IConfiguration configuration)
+    : ControllerBase
 {
     [Authorize]
     [HttpPost]
@@ -85,6 +88,20 @@ public class OrderController(
     }
 
     [Authorize]
+    [HttpGet]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
+    public IActionResult Get()
+    {
+        string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+        List<Order> orders = orderService.GetByUserId(userId);
+        List<OrderViewModel> orderViewModels = orders.Select(o => OrderMapper.MapToViewModel(o, configuration)).ToList();
+
+        return Ok(orderViewModels);
+    }
+
+    [Authorize]
     [HttpGet("{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
@@ -96,11 +113,9 @@ public class OrderController(
             return NotFound(new { Message = "Order not found" });
         }
 
-        return Ok(new OrderViewModel
-        {
-            Id = order.Id,
-            PaymentStatus = order.PaymentStatus.ToString(),
-        });
+        OrderViewModel orderViewModel = OrderMapper.MapToViewModel(order, configuration);
+
+        return Ok(orderViewModel);
     }
 
     [DisableCors]

@@ -16,4 +16,6 @@ public interface IOrderService
     public bool Update(Order order);
 
     public Order? GetByExternalPaymentId(string externalPaymentId);
+
+    public List<Order> GetByUserId(string userId);
 }

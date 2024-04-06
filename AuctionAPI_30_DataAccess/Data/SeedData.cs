@@ -1,4 +1,5 @@
-﻿using AuctionAPI_20_BusinessLogic.Models;
+﻿using AuctionAPI_20_BusinessLogic.Enums;
+using AuctionAPI_20_BusinessLogic.Models;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
@@ -20,6 +21,7 @@ public class SeedData(DataContext dbContext)
             await dbContext.SaveChangesAsync();
             SeedAuctions();
             SeedBids();
+            SeedOrders();
 
             await dbContext.SaveChangesAsync();
         }
@@ -322,6 +324,21 @@ public class SeedData(DataContext dbContext)
                 AuctionId = 3,
                 PriceInCents = 1500,
                 CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
+            }
+        );
+    }
+
+    private void SeedOrders()
+    {
+        dbContext.Orders.AddRange(
+            new Order
+            {
+                Id = "11d3105a-a235-4856-87e6-85da6f2b0860",
+                ExternalPaymentId = "tr_BjXRywuu_fake",
+                UserId = "0206A018-5AC6-492D-AB99-10105193D384",
+                ProductId = 1,
+                PriceInCents = 1212,
+                PaymentStatus = PaymentStatus.Paid,
             }
         );
     }

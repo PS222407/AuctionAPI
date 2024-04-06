@@ -150,4 +150,37 @@ public class OrderServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
     }
+
+    [Test]
+    public void GetByUserId_ShouldReturnListOfOrders()
+    {
+        // Arrange
+        const string userId = "A54E9D75-50E0-4245-B0A9-A557B2DE5C07";
+        List<Order> orders =
+        [
+            new Order
+            {
+                Id = "A54E9D75-50E0-4245-B0A9-A557B2DE5C07",
+                UserId = userId,
+                PriceInCents = 1259,
+            },
+
+            new Order
+            {
+                Id = "A54E9D75-50E0-4245-B0A9-A557B2DE5C07",
+                UserId = userId,
+                PriceInCents = 1259,
+            },
+        ];
+
+        _orderRepositoryMock.Setup(x => x.GetByUserId(userId))
+            .Returns(orders);
+
+        // Act
+        List<Order> result = _orderService.GetByUserId(userId);
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Count.EqualTo(2));
+    }
 }
