@@ -15,13 +15,12 @@ public class SeedData(DataContext dbContext)
 
         try
         {
-            SeedUsersAndRoles();
-            SeedCategories();
-            SeedProducts();
-            await dbContext.SaveChangesAsync();
-            SeedAuctions();
-            SeedBids();
-            SeedOrders();
+            await SeedUsersAndRoles();
+            await SeedCategories();
+            await SeedProducts();
+            await SeedAuctions();
+            await SeedBids();
+            await SeedOrders();
 
             await dbContext.SaveChangesAsync();
         }
@@ -31,7 +30,7 @@ public class SeedData(DataContext dbContext)
         }
     }
 
-    private void SeedUsersAndRoles()
+    private async Task SeedUsersAndRoles()
     {
         dbContext.Users.AddRange(
             new User
@@ -47,6 +46,7 @@ public class SeedData(DataContext dbContext)
                 Password = BCrypt.Net.BCrypt.HashPassword("Password123!"),
             }
         );
+        await dbContext.SaveChangesAsync();
 
         dbContext.Roles.AddRange(
             new Role
@@ -58,16 +58,17 @@ public class SeedData(DataContext dbContext)
                 Id = "81659B09-5665-4E61-ACB9-5C43E28BE6A4", Name = "Employee",
             }
         );
-
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
 
         List<User> users = dbContext.Users.ToList();
         List<Role> roles = dbContext.Roles.ToList();
         users.Find(u => u.Email == "admin@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Admin"));
         users.Find(u => u.Email == "employee@gmail.com")!.Roles.Add(roles.First(r => r.Name == "Employee"));
+
+        await dbContext.SaveChangesAsync();
     }
 
-    private void SeedCategories()
+    private async Task SeedCategories()
     {
         dbContext.Categories.AddRange(
             new Category
@@ -92,9 +93,10 @@ public class SeedData(DataContext dbContext)
                     "<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon icon-tabler icon-tabler-chef-hat\" width=\"44\" height=\"44\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"#2c3e50\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n  <path stroke=\"none\" d=\"M0 0h24v24H0z\" fill=\"none\"/>\n  <path d=\"M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723l0 7.126h-12v-7.126a4 4 0 1 1 2.092 -7.723a4 4 0 0 1 3.908 -3.151z\" />\n  <path d=\"M6.161 17.009l11.839 -.009\" />\n</svg>",
             }
         );
+        await dbContext.SaveChangesAsync();
     }
 
-    private void SeedProducts()
+    private async Task SeedProducts()
     {
         dbContext.Products.AddRange(
             new Product
@@ -166,9 +168,10 @@ public class SeedData(DataContext dbContext)
                 PriceInCents = 1212,
             }
         );
+        await dbContext.SaveChangesAsync();
     }
 
-    private void SeedAuctions()
+    private async Task SeedAuctions()
     {
         dbContext.Auctions.AddRange(
             new Auction
@@ -200,9 +203,10 @@ public class SeedData(DataContext dbContext)
                 DurationInSeconds = 14400,
             }
         );
+        await dbContext.SaveChangesAsync();
     }
 
-    private void SeedBids()
+    private async Task SeedBids()
     {
         dbContext.Bids.AddRange(
             new Bid
@@ -326,9 +330,10 @@ public class SeedData(DataContext dbContext)
                 CreatedAt = DateTime.Parse("2023-09-01T12:00:00"),
             }
         );
+        await dbContext.SaveChangesAsync();
     }
 
-    private void SeedOrders()
+    private async Task SeedOrders()
     {
         dbContext.Orders.AddRange(
             new Order
@@ -341,5 +346,6 @@ public class SeedData(DataContext dbContext)
                 PaymentStatus = PaymentStatus.Paid,
             }
         );
+        await dbContext.SaveChangesAsync();
     }
 }
