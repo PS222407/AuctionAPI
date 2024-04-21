@@ -20,9 +20,11 @@ public class ProductRepository(DataContext dbContext) : IProductRepository
     
     public Product? GetById(long id)
     {
+        DateTime now = DateTime.Now;
+        
         return dbContext.Products
             .Include(p => p.Category)
-            .Include(p => p.Auctions.Where(a => a.StartDateTime > DateTime.Now).OrderBy(a => a.StartDateTime))
+            .Include(p => p.Auctions.Where(a => a.StartDateTime.AddSeconds(a.DurationInSeconds) > now).OrderBy(a => a.StartDateTime))
             .FirstOrDefault(p => p.Id == id);
     }
     
