@@ -24,7 +24,9 @@ public class ProductRepository(DataContext dbContext) : IProductRepository
         
         return dbContext.Products
             .Include(p => p.Category)
-            .Include(p => p.Auctions.Where(a => a.StartDateTime.AddSeconds(a.DurationInSeconds) > now).OrderBy(a => a.StartDateTime))
+            .Include(p =>
+                p.Auctions.Where(a => a.StartDateTime.AddSeconds(a.DurationInSeconds) > now)
+                    .OrderBy(a => a.StartDateTime))
             .FirstOrDefault(p => p.Id == id);
     }
     

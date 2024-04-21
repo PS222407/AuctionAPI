@@ -33,9 +33,9 @@ public class AuthController(
         {
             return BadRequest(new { result.Errors });
         }
-
+        
         string passwordHash = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
-
+        
         context.Users.Add(new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -43,10 +43,10 @@ public class AuthController(
             Password = passwordHash,
         });
         context.SaveChanges();
-
+        
         return NoContent();
     }
-
+    
     [HttpPost("Login")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
@@ -58,25 +58,26 @@ public class AuthController(
         {
             return BadRequest(new { result.Errors });
         }
-
-        User? user = context.Users.Include(u => u.Roles).Include(user => user.RefreshTokens).FirstOrDefault(u => u.Email == userRequest.Email);
+        
+        User? user = context.Users.Include(u => u.Roles).Include(user => user.RefreshTokens)
+            .FirstOrDefault(u => u.Email == userRequest.Email);
         if (user == null)
         {
             return Unauthorized();
         }
-
+        
         if (!BCrypt.Net.BCrypt.Verify(userRequest.Password, user.Password))
         {
             return Unauthorized();
         }
-
+        
         RefreshToken refreshToken = GenerateRefreshToken();
         context.RefreshTokens.RemoveRange(user.RefreshTokens);
         context.SaveChanges();
-
+        
         user.RefreshTokens.Add(refreshToken);
         context.SaveChanges();
-
+        
         return Ok(new
         {
             AccessToken = GenerateJwtToken(user),
@@ -85,7 +86,7 @@ public class AuthController(
             ExpiresIn = config.GetValue<int>("Jwt:ExpiresIn"),
         });
     }
-
+    
     [HttpPost("Refresh")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
@@ -97,7 +98,7 @@ public class AuthController(
         {
             return BadRequest(new { result.Errors });
         }
-
+        
         User? user = context.Users
             .Include(u => u.Roles)
             .Include(u => u.RefreshTokens)
@@ -106,7 +107,7 @@ public class AuthController(
         {
             return Unauthorized();
         }
-
+        
         return Ok(new
         {
             AccessToken = GenerateJwtToken(user),
@@ -114,7 +115,7 @@ public class AuthController(
             ExpiresIn = config.GetValue<int>("Jwt:ExpiresIn"),
         });
     }
-
+    
     private string GenerateJwtToken(User user)
     {
         List<Claim> claims =
@@ -123,10 +124,10 @@ public class AuthController(
             new Claim(ClaimTypes.Email, user.Email),
         ];
         user.Roles.ForEach(r => claims.Add(new Claim(ClaimTypes.Role, r.Name)));
-
+        
         SymmetricSecurityKey symmetricSecurityKey = new(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         SigningCredentials credentials = new(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
+        
         JwtSecurityToken jwtSecurityToken = new(
             audience: config["Jwt:Audience"],
             issuer: config["Jwt:Issuer"],
@@ -134,10 +135,10 @@ public class AuthController(
             expires: DateTime.UtcNow.AddSeconds(config.GetValue<int>("Jwt:ExpiresIn")),
             signingCredentials: credentials
         );
-
+        
         return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
     }
-
+    
     private static RefreshToken GenerateRefreshToken()
     {
         return new RefreshToken
