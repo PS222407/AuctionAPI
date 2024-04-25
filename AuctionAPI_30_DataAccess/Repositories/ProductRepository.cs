@@ -11,27 +11,31 @@ public class ProductRepository(DataContext dbContext) : IProductRepository
     {
         return dbContext.Products.ToList();
     }
-    
+
     public Product? Create(Product product)
     {
         dbContext.Products.Add(product);
         return dbContext.SaveChanges() <= 0 ? null : product;
     }
-    
+
     public Product? GetById(long id)
     {
+        DateTime now = DateTime.Now;
+
         return dbContext.Products
             .Include(p => p.Category)
-            .Include(p => p.Auctions.Where(a => a.StartDateTime > DateTime.Now).OrderBy(a => a.StartDateTime))
+            .Include(p =>
+                p.Auctions.Where(a => a.StartDateTime.AddSeconds(a.DurationInSeconds) > now)
+                    .OrderBy(a => a.StartDateTime))
             .FirstOrDefault(p => p.Id == id);
     }
-    
+
     public bool Update(Product product)
     {
         dbContext.Products.Update(product);
         return dbContext.SaveChanges() > 0;
     }
-    
+
     public bool Delete(long id)
     {
         Product? product = dbContext.Products.FirstOrDefault(p => p.Id == id);
@@ -39,11 +43,11 @@ public class ProductRepository(DataContext dbContext) : IProductRepository
         {
             return false;
         }
-        
+
         dbContext.Products.Remove(product);
         return dbContext.SaveChanges() > 0;
     }
-    
+
     public bool Exists(long id)
     {
         return dbContext.Products.Any(p => p.Id == id);

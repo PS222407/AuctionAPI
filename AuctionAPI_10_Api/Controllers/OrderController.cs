@@ -96,7 +96,8 @@ public class OrderController(
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
         List<Order> orders = orderService.GetByUserId(userId);
-        List<OrderViewModel> orderViewModels = orders.Select(o => OrderMapper.MapToViewModel(o, configuration)).ToList();
+        List<OrderViewModel> orderViewModels =
+            orders.Select(o => OrderMapper.MapToViewModel(o, configuration)).ToList();
 
         return Ok(orderViewModels);
     }

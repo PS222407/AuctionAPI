@@ -59,7 +59,8 @@ public class AuthController(
             return BadRequest(new { result.Errors });
         }
 
-        User? user = context.Users.Include(u => u.Roles).Include(user => user.RefreshTokens).FirstOrDefault(u => u.Email == userRequest.Email);
+        User? user = context.Users.Include(u => u.Roles).Include(user => user.RefreshTokens)
+            .FirstOrDefault(u => u.Email == userRequest.Email);
         if (user == null)
         {
             return Unauthorized();
