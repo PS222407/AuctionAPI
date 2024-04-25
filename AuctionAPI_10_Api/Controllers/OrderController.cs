@@ -35,21 +35,21 @@ public class OrderController(
     public async Task<IActionResult> Post([FromBody] OrderRequest orderRequest)
     {
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        
+
         ValidationResult result = await validator.ValidateAsync(orderRequest);
         if (!result.IsValid)
         {
             return BadRequest(new { result.Errors });
         }
-        
+
         Product? product = productService.GetById(orderRequest.ProductId);
         if (product == null)
         {
             return NotFound();
         }
-        
+
         string orderId = Guid.NewGuid().ToString();
-        
+
         PaymentResponse paymentResponse;
         try
         {
@@ -61,14 +61,14 @@ public class OrderController(
             {
                 return Unauthorized(new { Message = "Unauthorized Mollie API-Key" });
             }
-            
+
             return BadRequest(new { Message = "Mollie error" });
         }
         catch (Exception)
         {
             return BadRequest(new { Message = "Payment by Mollie could not be created" });
         }
-        
+
         Order order;
         try
         {
@@ -78,7 +78,7 @@ public class OrderController(
         {
             return BadRequest(new { e.Message });
         }
-        
+
         return CreatedAtAction("Get", new { id = order.Id },
             new OrderCreatedViewModel
             {
@@ -86,7 +86,7 @@ public class OrderController(
                 OrderId = order.Id,
             });
     }
-    
+
     [Authorize]
     [HttpGet]
     [ProducesResponseType(200)]
@@ -94,14 +94,14 @@ public class OrderController(
     public IActionResult Get()
     {
         string userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        
+
         List<Order> orders = orderService.GetByUserId(userId);
         List<OrderViewModel> orderViewModels =
             orders.Select(o => OrderMapper.MapToViewModel(o, configuration)).ToList();
-        
+
         return Ok(orderViewModels);
     }
-    
+
     [Authorize]
     [HttpGet("{id}")]
     [ProducesResponseType(200)]
@@ -113,12 +113,12 @@ public class OrderController(
         {
             return NotFound(new { Message = "Order not found" });
         }
-        
+
         OrderViewModel orderViewModel = OrderMapper.MapToViewModel(order, configuration);
-        
+
         return Ok(orderViewModel);
     }
-    
+
     [DisableCors]
     [HttpPost("webhook")]
     [ProducesResponseType(200)]
@@ -127,13 +127,13 @@ public class OrderController(
     public async Task<IActionResult> Webhook([FromForm] WebhookRequest request)
     {
         Log.Information("Webhook received {@request}", request);
-        
+
         Order? order = orderService.GetByExternalPaymentId(request.id);
         if (order == null)
         {
             return Ok();
         }
-        
+
         PaymentResponse paymentResponse;
         try
         {
@@ -143,7 +143,7 @@ public class OrderController(
         {
             return BadRequest(new { e.Message });
         }
-        
+
         order.PaymentStatus = paymentResponse.Status switch
         {
             PaymentStatus.Paid => AuctionAPI_20_BusinessLogic.Enums.PaymentStatus.Paid,
@@ -155,7 +155,7 @@ public class OrderController(
         {
             return BadRequest(new { Message = "Order could not be updated" });
         }
-        
+
         return Ok();
     }
 }
