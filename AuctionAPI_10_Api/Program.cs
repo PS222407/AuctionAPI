@@ -65,7 +65,7 @@ builder.Services.AddSwaggerGen(options =>
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
     });
-
+    
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
@@ -115,6 +115,9 @@ builder.Services.AddMollieApi(options =>
 
 Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().WriteTo
     .File("logs/mollie-.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+
+string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
+Log.Information("{@connection}", connection);
 
 WebApplication app = builder.Build();
 
