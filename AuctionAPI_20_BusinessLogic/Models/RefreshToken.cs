@@ -10,5 +10,5 @@ public class RefreshToken
 
     public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddDays(30);
 
-    public List<User> Users { get; set; } = [];
+    public User User { get; set; }
 }
