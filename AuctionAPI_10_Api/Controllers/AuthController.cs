@@ -72,7 +72,10 @@ public class AuthController(
         }
 
         RefreshToken refreshToken = GenerateRefreshToken();
-        context.RefreshTokens.RemoveRange(user.RefreshTokens);
+
+        List<RefreshToken> expiredRefreshTokens =
+            user.RefreshTokens.Where(rt => rt.ExpiresAt < DateTime.UtcNow).ToList();
+        context.RefreshTokens.RemoveRange(expiredRefreshTokens);
         context.SaveChanges();
 
         user.RefreshTokens.Add(refreshToken);
